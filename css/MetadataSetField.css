@@ -1,0 +1,17 @@
+.LeftAndMain .MetadataSetField {
+	width: 97%;
+}
+
+.MetadataSetField h3 a {
+	padding: 5px 5px 5px 25px !important;
+	font-size: 12px !important;
+}
+
+.MetadataSetField .ui-accordion-content {
+	padding-left: 10px;
+	padding-right: 10px;
+}
+
+.MetadataSetField .ui-accordion-content .middleColumn {
+	width: 100%;
+}
