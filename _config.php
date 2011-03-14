@@ -7,3 +7,7 @@
 // apply to MetadataExtension extension:
 //
 // Object::add_extension('<class>', 'MetadataExtension');
+
+if (!class_exists('Orderable')) {
+	throw new Exception('The Metadata module required the Orderable module.');
+}
