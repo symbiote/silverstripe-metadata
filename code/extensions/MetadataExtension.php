@@ -8,10 +8,9 @@
 class MetadataExtension extends DataObjectDecorator {
 
 	public function extraStatics() {
-		return array(
-			'db'        => array('MetadataRaw'     => 'Text'),
-			'many_many' => array('MetadataSchemas' => 'MetadataSchema')
-		);
+		return array('db' => array(
+			'MetadataRaw' => 'Text'
+		));
 	}
 
 	/**
@@ -21,15 +20,41 @@ class MetadataExtension extends DataObjectDecorator {
 	 * @return DataObjectSet
 	 */
 	public function getSchemas() {
+		$schemas = $this->getAttachedSchemas();
+
 		if (!$this->owner->hasExtension('Hierarchy')) {
-			return $this->owner->MetadataSchemas();
+			return $schemas;
 		}
 
-		$schemas = $this->getInheritedSchemas();
-		$schemas->merge($this->owner->MetadataSchemas());
+		$schemas->merge($this->getInheritedSchemas());
 		$schemas->removeDuplicates();
 		$schemas->sort('Title');
+
 		return $schemas;
+	}
+
+	/**
+	 * Returns metadata schemas directly attached to this object via a schema
+	 * link (not including inherited schemas).
+	 *
+	 * @return DataObjectSet
+	 */
+	public function getAttachedSchemas() {
+		$filter = sprintf(
+			'"MetadataSchema"."ID" = "MetadataSchemaLink"."SchemaID"'
+			. ' AND "MetadataSchemaLink"."ParentClass" = \'%s\''
+			. ' AND "MetadataSchemaLink"."ParentID" = %d',
+			ClassInfo::baseDataClass($this->owner->class),
+			$this->owner->ID
+		);
+
+		$schemas = DataObject::get(
+			'MetadataSchema',
+			null,
+			null,
+			'INNER JOIN "MetadataSchemaLink" ON ' . $filter);
+
+		return $schemas ? $schemas : new DataObjectSet();
 	}
 
 	/**
@@ -44,19 +69,26 @@ class MetadataExtension extends DataObjectDecorator {
 			return new DataObjectSet();
 		}
 
-		$ids      = array();
-		$parents  = $this->owner->getAncestors();
-		$relation = $this->owner->many_many('MetadataSchemas');
+		$ids     = array();
+		$parents = $this->owner->getAncestors();
 
 		foreach ($parents as $parent) {
 			$ids[] = $parent->ID;
 		}
 
+		$filter = sprintf(
+			'"MetadataSchema"."ID" = "MetadataSchemaLink"."SchemaID"'
+			. ' AND "MetadataSchemaLink"."ParentClass" = \'%s\''
+			. ' AND "MetadataSchemaLink"."ParentID" IN (%s)',
+			ClassInfo::baseDataClass($this->owner->class),
+			implode(', ', $ids)
+		);
+
 		$result = DataObject::get(
 			'MetadataSchema',
-			sprintf('"%s"."%s" IN (%s)', $relation[4], $relation[2], implode(', ', $ids)),
 			null,
-			sprintf('INNER JOIN "%1$s" ON "%1$s"."MetadataSchemaID" = "MetadataSchema"."ID"', $relation[4])
+			null,
+			'INNER JOIN "MetadataSchemaLink" ON ' . $filter
 		);
 
 		return $result ? $result : new DataObjectSet();
@@ -95,10 +127,9 @@ class MetadataExtension extends DataObjectDecorator {
 	}
 
 	public function updateCMSFields(FieldSet $fields) {
-		$allSchemas = DataObject::get('MetadataSchema');
-		$schemas    = $this->getSchemas();
-
-		if (!$allSchemas) return;
+		if (!$allSchemas = DataObject::get('MetadataSchema')) {
+			return;
+		}
 
 		$fields->addFieldsToTab('Root.Metadata', array(
 			new HeaderField('MetadataInfoHeader', 'Metadata Information'),
@@ -108,6 +139,7 @@ class MetadataExtension extends DataObjectDecorator {
 		));
 
 		$inherited = $this->getInheritedSchemas()->map('ID', 'ID');
+		$linkedSchemas->setValue($this->getAttachedSchemas()->map('ID', 'ID'));
 		$linkedSchemas->setDefaultItems($inherited);
 		$linkedSchemas->setDisabledItems($inherited);
 
@@ -127,11 +159,30 @@ class MetadataExtension extends DataObjectDecorator {
 	 * @param string $values
 	 */
 	public function saveMetadataSchemas($values) {
+		$attached  = $this->getAttachedSchemas();
 		$inherited = $this->getInheritedSchemas()->map('ID', 'ID');
-		$ids       = array_map('intval', explode(',', $values));
-		$component = $this->owner->MetadataSchemas();
 
-		$component->setByIDList(array_diff($ids, $inherited));
+		$ids = array_map('intval', explode(',', $values));
+		$ids = array_diff($ids, $inherited);
+
+		$add = array_diff($ids, $attached->map('ID', 'ID'));
+		$del = array_diff($attached->map('ID', 'ID'), $ids);
+
+		if ($add) foreach ($add as $id) {
+			$link = new MetadataSchemaLink();
+			$link->ParentClass = $this->owner->class;
+			$link->ParentID    = $this->owner->ID;
+			$link->SchemaID    = $id;
+			$link->write();
+		}
+
+		if ($del) DB::query(sprintf(
+			'DELETE FROM "MetadataSchemaLink" WHERE "SchemaID" IN (%s)'
+			. ' AND "ParentClass" = \'%s\' AND "ParentID" = %d',
+			implode(', ', $del),
+			Convert::raw2sql(ClassInfo::baseDataClass($this->owner->class)),
+			$this->owner->ID
+		));
 	}
 
 }

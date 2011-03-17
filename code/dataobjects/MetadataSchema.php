@@ -13,7 +13,8 @@ class MetadataSchema extends DataObject {
 	);
 
 	public static $has_many = array(
-		'Fields' => 'MetadataField'
+		'Fields' => 'MetadataField',
+		'Links'  => 'MetadataSchemaLink'
 	);
 
 	public static $default_sort = '"Title"';
@@ -53,18 +54,20 @@ class MetadataSchema extends DataObject {
 
 		if ($this->isInDB()) {
 			$fields->removeByName('Fields');
-			$schemaFields = new MetadataFieldsTableField($this, 'Fields', 'MetadataField');
+			$fields->removeByName('Links');
+
+			$fields->addFieldsToTab('Root.Main', array(
+				new HeaderField('MetadataFieldsHeader', 'Metadata Fields'),
+				new MetadataFieldsTableField($this, 'Fields', 'MetadataField')
+			));
 		} else {
-			$schemaFields = new LiteralField(
+			$fields->addFieldToTab('Root.Main', new LiteralField(
 				'AddFieldsOnceSavedNote',
-				'<p>You can add fields once you save for the first time.</p>'
-			);
+				'<p>You can add metadata fields once you save for the first time.</p>'
+			));
 		}
 
-		$fields->addFieldsToTab('Root.Main', array(
-			new HeaderField('MetadataFieldsHeader', 'Metadata Fields'),
-			$schemaFields
-		));
+
 
 		return $fields;
 	}
