@@ -44,6 +44,8 @@ class MetadataSetField extends FormField {
 
 				if (array_key_exists($sName, $value[$schema->Name])) {
 					$field->setValue($value[$schema->Name][$sName], $value[$schema->Name]);
+				} else {
+					$field->setValue(null);
 				}
 			}
 
