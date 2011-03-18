@@ -7,6 +7,11 @@
  */
 class MetadataExtension extends DataObjectDecorator {
 
+	/**
+	 * @var DataObjectSet
+	 */
+	protected $schemas;
+
 	public function extraStatics() {
 		return array('db' => array(
 			'MetadataRaw' => 'Text'
@@ -20,17 +25,19 @@ class MetadataExtension extends DataObjectDecorator {
 	 * @return DataObjectSet
 	 */
 	public function getSchemas() {
-		$schemas = $this->getAttachedSchemas();
+		if (!$this->schemas) {
+			$schemas = $this->getAttachedSchemas();
 
-		if (!$this->owner->hasExtension('Hierarchy')) {
-			return $schemas;
+			if ($this->owner->hasExtension('Hierarchy')) {
+				$schemas->merge($this->getInheritedSchemas());
+				$schemas->removeDuplicates();
+				$schemas->sort('Title');
+			}
+
+			$this->schemas = $schemas;
 		}
 
-		$schemas->merge($this->getInheritedSchemas());
-		$schemas->removeDuplicates();
-		$schemas->sort('Title');
-
-		return $schemas;
+		return $this->schemas;
 	}
 
 	/**
