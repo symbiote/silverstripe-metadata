@@ -7,6 +7,20 @@
  */
 class MetadataSetField extends FormField {
 
+	/**
+	 * @var DataObject
+	 */
+	protected $parent;
+
+	public function __construct($parent, $name) {
+		if (!$parent->hasExtension('MetadataExtension')) {
+			throw new Exception('The parent class must have the metadata extension.');
+		}
+
+		$this->parent = $parent;
+		parent::__construct($name);
+	}
+
 	public function saveInto($record) {
 		$schemas  = $this->form->getRecord()->getSchemas();
 		$value    = $this->Value();
@@ -40,6 +54,27 @@ class MetadataSetField extends FormField {
 		}
 
 		$record->{$this->name} = serialize($metadata);
+	}
+
+	/**
+	 * @param Validator $validator
+	 */
+	public function validate($validator) {
+		foreach ($this->parent->getSchemas() as $schema) {
+			foreach ($schema->Fields() as $field) {
+				$error = $field->Required && (
+					!isset($this->value[$schema->Name][$field->Name])
+					|| !strlen($this->value[$schema->Name][$field->Name])
+				);
+
+				if ($error) {
+					$validator->validationError($this->name, sprintf(
+						'The metadata field "%s" on the "%s" schema is required',
+						$field->Title, $schema->Title
+					));
+				}
+			}
+		}
 	}
 
 	public function FieldHolder() {

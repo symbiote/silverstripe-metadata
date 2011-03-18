@@ -145,7 +145,7 @@ class MetadataExtension extends DataObjectDecorator {
 
 		$fields->addFieldsToTab('Root.Metadata', array(
 			new HeaderField('MetadataInfoHeader', 'Metadata Information'),
-			new MetadataSetField('MetadataRaw'),
+			new MetadataSetField($this->owner, 'MetadataRaw'),
 			new HeaderField('MetadataSchemasHeader', 'Metadata Schemas'),
 			$linkedSchemas = new CheckboxSetField('MetadataSchemas', '', $allSchemas)
 		));
