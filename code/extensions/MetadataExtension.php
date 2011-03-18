@@ -102,6 +102,24 @@ class MetadataExtension extends DataObjectDecorator {
 	}
 
 	/**
+	 * Links a metadata schema to this object, if it's not already linked.
+	 *
+	 * @param MetadataSchema|int $schema
+	 */
+	public function addSchema($schema) {
+		$id       = is_object($schema) ? $schema->ID : $schema;
+		$attached = $this->getSchemas()->map();
+
+		if (!array_key_exists($id, $attached)) {
+			$link = new MetadataSchemaLink();
+			$link->ParentClass = $this->owner->class;
+			$link->ParentID    = $this->owner->ID;
+			$link->SchemaID    = $id;
+			$link->write();
+		}
+	}
+
+	/**
 	 * @return array
 	 */
 	public function getAllMetadata() {
@@ -181,11 +199,7 @@ class MetadataExtension extends DataObjectDecorator {
 		$del = array_diff($attached->map('ID', 'ID'), $ids);
 
 		if ($add) foreach ($add as $id) {
-			$link = new MetadataSchemaLink();
-			$link->ParentClass = $this->owner->class;
-			$link->ParentID    = $this->owner->ID;
-			$link->SchemaID    = $id;
-			$link->write();
+			$this->addSchema($id);
 		}
 
 		if ($del) DB::query(sprintf(
