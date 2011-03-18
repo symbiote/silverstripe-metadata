@@ -122,14 +122,19 @@ class MetadataExtension extends DataObjectDecorator {
 	 * @return mixed
 	 */
 	public function Metadata($schema, $field) {
-		if (!$metadata = $this->owner->MetadataRaw) {
-			return;
+		$metadata = $this->getAllMetadata();
+		$schema   = $this->getSchemas()->find('Name', $schema);
+
+		if (!$schema) {
+			return false;
 		}
 
-		$metadata = $this->getAllMetadata();
-
-		if (isset($metadata[$schema][$field])) {
-			return $metadata[$schema][$field];
+		if (isset($metadata[$schema->Name][$field])) {
+			return $metadata[$schema->Name][$field];
+		} else {
+			if ($field = $schema->Fields()->find('Name', $field)) {
+				return $field->Default;
+			}
 		}
 	}
 

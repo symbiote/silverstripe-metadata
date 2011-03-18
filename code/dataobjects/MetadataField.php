@@ -8,8 +8,9 @@
 class MetadataField extends DataObject {
 
 	public static $db = array(
-		'Name'  => 'Varchar',
-		'Title' => 'Varchar(255)'
+		'Name'    => 'Varchar(100)',
+		'Title'   => 'Varchar(255)',
+		'Default' => 'Text'
 	);
 
 	public static $has_one = array(

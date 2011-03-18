@@ -43,6 +43,11 @@ class MetadataDateField extends MetadataField {
 			)
 		));
 
+		$default = $this->getFormField();
+		$default->setName('Default');
+		$default->setTitle('Default');
+		$fields->addFieldToTab('Root.Main', $default);
+
 		return $fields;
 	}
 

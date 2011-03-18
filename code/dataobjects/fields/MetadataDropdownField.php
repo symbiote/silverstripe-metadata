@@ -37,8 +37,19 @@ class MetadataDropdownField extends MetadataField {
 	public function getCMSFields() {
 		$fields = parent::getCMSFields();
 
+		$fields->removeByName('Options');
+		$fields->removeByName('Default');
+		$fields->removeByName('EmptyMode');
+		$fields->removeByName('EmptyText');
+
 		$fields->addFieldsToTab('Root.Main', array(
 			new TextField('Options', 'Options (comma separated)'),
+			new DropdownField(
+				'Default',
+				'Default option',
+				ArrayLib::valuekey(preg_split('/, */', $this->Options)),
+				null, null, true
+			),
 			new OptionsetField('EmptyMode', 'Empty first option', array(
 				'none'  => 'Do not display an empty default option',
 				'blank' => 'Display an empty option as the first option',
