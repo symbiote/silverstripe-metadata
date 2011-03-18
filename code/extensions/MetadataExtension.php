@@ -117,6 +117,8 @@ class MetadataExtension extends DataObjectDecorator {
 			$link->SchemaID    = $id;
 			$link->write();
 		}
+
+		$this->schemas = null;
 	}
 
 	/**
@@ -209,6 +211,10 @@ class MetadataExtension extends DataObjectDecorator {
 			Convert::raw2sql(ClassInfo::baseDataClass($this->owner->class)),
 			$this->owner->ID
 		));
+	}
+
+	public function flushCache() {
+		$this->schemas = null;
 	}
 
 }
