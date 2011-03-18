@@ -20,6 +20,11 @@ class MetadataField extends DataObject {
 		'Orderable'
 	);
 
+	public static $field_labels = array(
+		'Name'  => 'Field name',
+		'Title' => 'Title (human-readable name)'
+	);
+
 	/**
 	 * Returns the title that describes the field type.
 	 *
