@@ -1,5 +1,5 @@
 ;(function($) {
-	$(".MetadataSetField").livequery(function() {
+	$(".ss-metdatasetfield").livequery(function() {
 		$(this).accordion({
 			active: false,
 			autoHeight: true,
