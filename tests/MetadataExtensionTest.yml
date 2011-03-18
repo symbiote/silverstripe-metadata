@@ -1,0 +1,17 @@
+MetadataSchema:
+  root:
+    Name: Root
+    Title: Root Schema
+  child:
+    Name: Child
+    Title: Child Schema
+
+MetadataExtensionTest_Parent:
+  parent:
+    Title: Parent Object
+  child_1:
+    Title: Child 1
+    Parent: =>MetadataExtensionTest_Parent.parent
+  child_2:
+    Title: Child 2
+    Parent: =>MetadataExtensionTest_Parent.child_1
