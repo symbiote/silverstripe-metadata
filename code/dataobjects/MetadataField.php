@@ -54,4 +54,8 @@ class MetadataField extends DataObject {
 		return sprintf('MetadataRaw[%s][%s]', $this->Schema()->Name, $this->Name);
 	}
 
+	public function getValidator() {
+		return new RequiredFields('Name', 'Title');
+	}
+
 }
