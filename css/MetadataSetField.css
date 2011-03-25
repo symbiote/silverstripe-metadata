@@ -19,3 +19,10 @@
 .ss-metadatasetfield-description {
 	margin: 0 0 10px 0;
 }
+
+.ss-metadatasetfield-keywordreplacements { display: none; }
+.ss-metadatasetfield-keywordreplacements h3 { font-size: 20px; margin-bottom: 10px; }
+.ss-metadatasetfield-keywordreplacements p { margin-bottom: 10px; }
+.ss-metadatasetfield-keywordreplacements ul { padding-left: 20px; }
+.ss-metadatasetfield-keywordreplacements li { font-size: 12px; list-style: disc; }
+.ss-metadatasetfield-keywordreplacements li strong { font-size: 12px; }

@@ -116,4 +116,21 @@ class MetadataSetField extends FormField {
 		return $result;
 	}
 
+	/**
+	 * @return DataObjectSet
+	 */
+	public function Keywords() {
+		$record = $this->form->getRecord();
+		$result = new DataObjectSet();
+
+		foreach ($record->getAllFields() as $name => $value) {
+			$result->push(new ArrayData(array(
+				'Name'  => $name,
+				'Label' => $record->fieldLabel($name)
+			)));
+		}
+
+		return $result;
+	}
+
 }

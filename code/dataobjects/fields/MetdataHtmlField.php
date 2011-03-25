@@ -16,7 +16,12 @@ class MetadataHtmlField extends MetadataTextField {
 	 * @return HtmlEditorField
 	 */
 	public function getFormField() {
-		return new HtmlEditorField($this->getFormFieldName(), $this->Title, $this->Rows);
+		$field = new HtmlEditorField($this->getFormFieldName(), $this->Title, $this->Rows);
+		$field->setRightTitle(sprintf(
+			'<a href="#" class="ss-metadatasetfield-showreplacements">Available keyword replacements</a>'
+		));
+
+		return $field;
 	}
 
 }

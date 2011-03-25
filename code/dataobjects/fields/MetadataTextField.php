@@ -40,10 +40,16 @@ class MetadataTextField extends MetadataField {
 	 */
 	public function getFormField() {
 		if ($rows = $this->Rows > 1) {
-			return new TextareaField($this->getFormFieldName(), $this->Title, $this->Rows);
+			$field = new TextareaField($this->getFormFieldName(), $this->Title, $this->Rows);
 		} else {
-			return new TextField($this->getFormFieldName(), $this->Title);
+			$field = new TextField($this->getFormFieldName(), $this->Title);
 		}
+
+		$field->setRightTitle(sprintf(
+			'<a href="#" class="ss-metadatasetfield-showreplacements">Available keyword replacements</a>'
+		));
+
+		return $field;
 	}
 
 	/**
