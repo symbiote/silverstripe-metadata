@@ -142,10 +142,12 @@ class MetadataExtension extends DataObjectDecorator {
 	 */
 	public function getRawMetadataValue($schema, $field) {
 		$metadata = $this->getAllMetadata();
-		$schema   = $this->getSchemas()->find('Name', $schema);
-		$field    = $schema->Fields()->find('Name', $field);
 
-		if (!$field) {
+		if (!$schema = $this->getSchemas()->find('Name', $schema)) {
+			return;
+		}
+
+		if (!$field = $schema->Fields()->find('Name', $field)) {
 			return;
 		}
 
@@ -165,15 +167,17 @@ class MetadataExtension extends DataObjectDecorator {
 	 * @return mixed
 	 */
 	public function Metadata($schema, $field) {
-		$raw    = $this->getRawMetadataValue($schema, $field);
-		$schema = $this->getSchemas()->find('Name', $schema);
-		$field  = $schema->Fields()->find('Name', $field);
+		$raw = $this->getRawMetadataValue($schema, $field);
 
-		if (!$field) {
+		if (!$schema = $this->getSchemas()->find('Name', $schema)) {
 			return;
 		}
 
-		return $field->process($raw);
+		if (!$field = $schema->Fields()->find('Name', $field)) {
+			return;
+		}
+
+		return $field->process($raw, $this->owner);
 	}
 
 	public function updateCMSFields(FieldSet $fields) {

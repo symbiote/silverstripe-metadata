@@ -57,9 +57,10 @@ class MetadataField extends DataObject {
 	 * into a template.
 	 *
 	 * @param  string $value
+	 * @param  DataObject $record
 	 * @return mixed
 	 */
-	public function process($value) {
+	public function process($value, $record) {
 		return $value;
 	}
 
