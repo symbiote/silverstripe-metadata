@@ -11,3 +11,5 @@
 if (!class_exists('Orderable')) {
 	throw new Exception('The Metadata module required the Orderable module.');
 }
+
+define('METADATA_DIR', 'metadata');

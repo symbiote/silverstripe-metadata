@@ -2,7 +2,7 @@
 /**
  * @package silverstripe-metadata
  */
-class MetadataDropdownFieldOption extends DataObject {
+class MetadataSelectFieldOption extends DataObject {
 
 	public static $db = array(
 		'Key'   => 'Varchar(100)',
@@ -10,7 +10,7 @@ class MetadataDropdownFieldOption extends DataObject {
 	);
 
 	public static $has_one = array(
-		'Parent' => 'MetadataDropdownField'
+		'Parent' => 'MetadataSelectField'
 	);
 
 	public static $summary_fields = array(
@@ -29,7 +29,7 @@ class MetadataDropdownFieldOption extends DataObject {
 		$result = parent::validate();
 
 		if (!$this->Value) {
-			$result->error('Each dropdown option must have a value.');
+			$result->error('Each select option must have a value.');
 		}
 
 		return $result;
