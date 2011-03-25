@@ -79,6 +79,19 @@ class MetadataSchema extends DataObject {
 		return new RequiredFields('Name', 'Title');
 	}
 
+	public function validate() {
+		$result = parent::validate();
+
+		if (preg_match('/[^.a-zA-Z0-9_]+/', $this->Name)) {
+			$result->error(
+				'The schema name can only contain alphanumeric characters,'
+				. ' underscores and periods.'
+			);
+		}
+
+		return $result;
+	}
+
 	/**
 	 * @return string
 	 */
