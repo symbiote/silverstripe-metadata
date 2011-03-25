@@ -106,7 +106,7 @@ class MetadataSetField extends FormField {
 				$brPos  = strrpos($field->Name(), '[');
 				$scName = substr($field->Name(), $brPos + 1, -1);
 
-				$field->setValue($record->Metadata($schema->Name, $scName));
+				$field->setValue($record->getRawMetadataValue($schema->Name, $scName));
 				$fields->push($field);
 			}
 

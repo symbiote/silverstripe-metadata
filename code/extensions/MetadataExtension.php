@@ -134,28 +134,46 @@ class MetadataExtension extends DataObjectDecorator {
 	}
 
 	/**
-	 * Returns a metadata value if it exists for a schema and field name. This
-	 * is the main method for accessing the metadata attached to an object.
+	 * Returns a raw metadata value (i.e. not run through a process method).
+	 *
+	 * @param  string $schema
+	 * @param  string $field
+	 * @return string
+	 */
+	public function getRawMetadataValue($schema, $field) {
+		$metadata = $this->getAllMetadata();
+		$schema   = $this->getSchemas()->find('Name', $schema);
+		$field    = $schema->Fields()->find('Name', $field);
+
+		if (!$field) {
+			return;
+		}
+
+		if (isset($metadata[$schema->Name][$field->Name])) {
+			return $metadata[$schema->Name][$field->Name];
+		} else {
+			return $field->Default;
+		}
+	}
+
+	/**
+	 * Returns a metadata value if it exists for a schema and field name, suitable
+	 * for injection into a template.
 	 *
 	 * @param  string $schema
 	 * @param  string $field
 	 * @return mixed
 	 */
 	public function Metadata($schema, $field) {
-		$metadata = $this->getAllMetadata();
-		$schema   = $this->getSchemas()->find('Name', $schema);
+		$raw    = $this->getRawMetadataValue($schema, $field);
+		$schema = $this->getSchemas()->find('Name', $schema);
+		$field  = $schema->Fields()->find('Name', $field);
 
-		if (!$schema) {
-			return false;
+		if (!$field) {
+			return;
 		}
 
-		if (isset($metadata[$schema->Name][$field])) {
-			return $metadata[$schema->Name][$field];
-		} else {
-			if ($field = $schema->Fields()->find('Name', $field)) {
-				return $field->Default;
-			}
-		}
+		return $field->process($raw);
 	}
 
 	public function updateCMSFields(FieldSet $fields) {

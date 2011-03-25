@@ -24,7 +24,7 @@ class MetadataField extends DataObject {
 
 	public static $field_labels = array(
 		'Name'  => 'Field name',
-		'Title' => 'Title (human-readable name)'
+		'Title' => 'Title (human readable name)'
 	);
 
 	/**
@@ -50,6 +50,17 @@ class MetadataField extends DataObject {
 		throw new Exception(
 			'You must implemented getFormField() in your metadata field type.'
 		);
+	}
+
+	/**
+	 * Processes a field value, and returns the output that should be rendered
+	 * into a template.
+	 *
+	 * @param  string $value
+	 * @return mixed
+	 */
+	public function process($value) {
+		return $value;
 	}
 
 	/**

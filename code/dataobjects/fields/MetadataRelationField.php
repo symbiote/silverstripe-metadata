@@ -27,6 +27,15 @@ class MetadataRelationField extends MetadataField {
 			null, null, ' ');
 	}
 
+	/**
+	 * @return DataObject
+	 */
+	public function process($value) {
+		if (ctype_digit($value)) {
+			return DataObject::get_by_id($this->SubjectClass, $value);
+		}
+	}
+
 	public function getCMSFields() {
 		$fields = parent::getCMSFields();
 

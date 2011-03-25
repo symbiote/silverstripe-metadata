@@ -15,6 +15,13 @@ class MetadataCheckboxField extends MetadataField {
 		return new CheckboxField($this->getFormFieldName(), $this->Title, $this->Default);
 	}
 
+	/**
+	 * @return Boolean
+	 */
+	public function process($value) {
+		return DBField::create('Boolean', $value);
+	}
+
 	public function getCMSFields() {
 		$fields = parent::getCMSFields();
 
