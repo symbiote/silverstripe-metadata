@@ -5,9 +5,12 @@
 class MetadataDropdownField extends MetadataField {
 
 	public static $db = array(
-		'Options'   => 'Text',
 		'EmptyMode' => 'Enum("none, blank, text")',
 		'EmptyText' => 'Varchar(100)'
+	);
+
+	public static $has_many = array(
+		'Options' => 'MetadataDropdownFieldOption'
 	);
 
 	public static $defaults = array(
@@ -28,8 +31,8 @@ class MetadataDropdownField extends MetadataField {
 		return new DropdownField(
 			$this->getFormFieldName(),
 			$this->Title,
-			ArrayLib::valuekey(preg_split('/, */', $this->Options)),
-			null,
+			$this->Options()->map('Key', 'Value'),
+			$this->Default,
 			null,
 			$emptyText);
 	}
@@ -42,12 +45,29 @@ class MetadataDropdownField extends MetadataField {
 		$fields->removeByName('EmptyMode');
 		$fields->removeByName('EmptyText');
 
+		$fields->addFieldToTab(
+			'Root.Main',
+			new HeaderField('FieldConfigHeader', 'Field Configuration'),
+			'Name'
+		);
+
 		$fields->addFieldsToTab('Root.Main', array(
-			new TextField('Options', 'Options (comma separated)'),
+			new HeaderField('DropdownOptionsHeader', 'Dropdown Options'),
+			$options = new TableField(
+				'Options',
+				'MetadataDropdownFieldOption',
+				null,
+				array(
+					'Key'   => 'TextField',
+					'Value' => 'TextField'
+				),
+				'ParentID',
+				$this->ID
+			),
 			new DropdownField(
 				'Default',
 				'Default option',
-				ArrayLib::valuekey(preg_split('/, */', $this->Options)),
+				$this->Options()->map('Key', 'Value'),
 				null, null, true
 			),
 			new OptionsetField('EmptyMode', 'Empty first option', array(
