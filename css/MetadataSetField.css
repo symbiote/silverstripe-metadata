@@ -15,3 +15,7 @@
 .MetadataSetField .ui-accordion-content .middleColumn {
 	width: 100%;
 }
+
+.ss-metadatasetfield-description {
+	margin: 0 0 10px 0;
+}

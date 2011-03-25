@@ -107,8 +107,9 @@ class MetadataSetField extends FormField {
 			}
 
 			$result->push(new ArrayData(array(
-				'Title'  => $schema->Title,
-				'Fields' => $fields
+				'Title'       => $schema->Title,
+				'Description' => $schema->Description,
+				'Fields'      => $fields
 			)));
 		}
 
