@@ -64,17 +64,13 @@ class MetadataSetField extends FormField {
 	public function validate($validator) {
 		foreach ($this->parent->getSchemas() as $schema) {
 			foreach ($schema->Fields() as $field) {
-				$error = $field->Required && (
-					!isset($this->value[$schema->Name][$field->Name])
-					|| !strlen($this->value[$schema->Name][$field->Name])
-				);
-
-				if ($error) {
-					$validator->validationError($this->name, sprintf(
-						'The metadata field "%s" on the "%s" schema is required',
-						$field->Title, $schema->Title
-					));
+				if (isset($this->value[$schema->Name][$field->Name])) {
+					$value = $this->value[$schema->Name][$field->Name];
+				} else {
+					$value = null;
 				}
+
+				$field->validateValue($value, $validator);
 			}
 		}
 	}

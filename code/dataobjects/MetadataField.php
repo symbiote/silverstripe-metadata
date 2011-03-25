@@ -65,6 +65,21 @@ class MetadataField extends DataObject {
 	}
 
 	/**
+	 * Checks if a certain field value is valid.
+	 *
+	 * @param  string $value
+	 * @param  Validator $validator
+	 */
+	public function validateValue($value, $validator) {
+		if ($this->Required && !strlen($value)) {
+			$validator->validationError('MetadataRaw', sprintf(
+				'The metadata field "%s" on the "%s" schema is required',
+				$this->Title, $this->Schema()->Title
+			));
+		}
+	}
+
+	/**
 	 * Returns the form field name to use for the metadata field.
 	 *
 	 * @return string
