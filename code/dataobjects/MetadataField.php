@@ -88,8 +88,15 @@ class MetadataField extends DataObject {
 		return sprintf('MetadataRaw[%s][%s]', $this->Schema()->Name, $this->Name);
 	}
 
+	/**
+	 * @return string
+	 */
+	public function getTitle() {
+		return ($title = $this->getField('Title')) ? $title : $this->Name;
+	}
+
 	public function getValidator() {
-		return new RequiredFields('Name', 'Title');
+		return new RequiredFields('Name');
 	}
 
 	public function validate() {
