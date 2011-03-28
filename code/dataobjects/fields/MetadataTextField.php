@@ -26,9 +26,9 @@ class MetadataTextField extends MetadataField {
 		));
 		$fields->addFieldToTab('Root.Main', new LiteralField(
 			'KeywordNote', '<p>Keyword replacements in the form "$FieldName"'
-			. ' can be used in the default value, as well as in the actual'
-			. ' metadata value. These will be replaced with the corresponding'
-			. ' field from the record the schema is applied to.<p>'
+			. ' or "$Member.FieldName" can be used in the default value, as well'
+			. ' as in the actual metadata value. These will be replaced with the'
+			. ' corresponding field from the record the schema is applied to.<p>'
 		));
 		$fields->dataFieldByName('Default')->setRows(3);
 
@@ -52,6 +52,13 @@ class MetadataTextField extends MetadataField {
 		return $field;
 	}
 
+	public function processBeforeWrite($value, $record) {
+		return preg_replace_callback(
+			'/\$Member\.([A-Za-z_][A-Za-z0-9_]*)/',
+			array($this, 'replaceMemberKeyword'),
+			$value);
+	}
+
 	/**
 	 * @return string
 	 */
@@ -63,6 +70,17 @@ class MetadataTextField extends MetadataField {
 			array($this, 'replaceKeyword'),
 			$value
 		);
+	}
+
+	public function replaceMemberKeyword($matches) {
+		$record = Member::currentUser();
+		$field  = $matches[1];
+
+		if ($record && $record->$field) {
+			return $record->$field;
+		} else {
+			return '$Member.' . $field;
+		}
 	}
 
 	public function replaceKeyword($matches) {

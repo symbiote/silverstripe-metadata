@@ -22,7 +22,7 @@ class MetadataSetField extends FormField {
 	}
 
 	public function saveInto($record) {
-		$schemas  = $this->form->getRecord()->getSchemas();
+		$schemas  = $record->getSchemas();
 		$value    = $this->Value();
 		$metadata = array();
 
@@ -50,8 +50,11 @@ class MetadataSetField extends FormField {
 			}
 
 			foreach ($fields as $field) {
-				$name = $namesMap[$field->Name()];
-				$metadata[$schema->Name][$name] = $field->dataValue();
+				$name        = $namesMap[$field->Name()];
+				$schemaField = $schema->Fields()->find('Name', $name);
+				$toSave      = $schemaField->processBeforeWrite($field->dataValue(), $record);
+
+				$metadata[$schema->Name][$name] = $toSave;
 			}
 		}
 
@@ -120,7 +123,17 @@ class MetadataSetField extends FormField {
 	 * @return DataObjectSet
 	 */
 	public function Keywords() {
-		$record = $this->form->getRecord();
+		return $this->getKeywordsFor($this->form->getRecord());
+	}
+
+	/**
+	 * @return DataObjectSet
+	 */
+	public function MemberKeywords() {
+		return $this->getKeywordsFor(Member::currentUser());
+	}
+
+	protected function getKeywordsFor($record) {
 		$result = new DataObjectSet();
 
 		foreach ($record->getAllFields() as $name => $value) {

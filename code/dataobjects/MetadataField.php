@@ -53,6 +53,18 @@ class MetadataField extends DataObject {
 	}
 
 	/**
+	 * Processes a field value before it is saved to the database, and returns
+	 * the value.
+	 *
+	 * @param  string $value
+	 * @param  DataObject $record
+	 * @return mixed
+	 */
+	public function processBeforeWrite($value, $record) {
+		return $value;
+	}
+
+	/**
 	 * Processes a field value, and returns the output that should be rendered
 	 * into a template.
 	 *
