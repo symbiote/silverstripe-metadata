@@ -87,7 +87,7 @@ class MetadataTextField extends MetadataField {
 		$record = $this->record;
 		$field  = $matches[1];
 
-		if ($record->$field) {
+		if ($record->hasField($field)) {
 			return $record->$field;
 		} else {
 			return '$' . $field;
