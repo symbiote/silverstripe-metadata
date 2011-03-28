@@ -10,7 +10,7 @@
 			var $field  = $(this).parents(".ss-metadatasetfield");
 			var $dialog = $field.find(".ss-metadatasetfield-keywordreplacements");
 			
-			$dialog.dialog({
+			$dialog.clone().dialog({
 				modal: true,
 				resizable: false,
 				draggable: false,
