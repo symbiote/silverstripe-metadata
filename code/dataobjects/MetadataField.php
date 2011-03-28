@@ -14,6 +14,10 @@ class MetadataField extends DataObject {
 		'Default'  => 'Text'
 	);
 
+	public static $indexes = array(
+		'Name_SchemaID' => array('type' => 'unique', 'value' => 'Name,SchemaID')
+	);
+
 	public static $has_one = array(
 		'Schema' => 'MetadataSchema'
 	);
@@ -118,6 +122,19 @@ class MetadataField extends DataObject {
 			$result->error(
 				'The field name can only contain alphanumeric characters,'
 				. ' underscores and periods.'
+			);
+		}
+
+		$other = DataObject::get_one('MetadataField', sprintf(
+			'"Name" = \'%s\' AND "SchemaID" = %d %s',
+			Convert::raw2sql($this->Name), $this->SchemaID,
+			($this->ID ? "AND \"MetadataField\".\"ID\" <> {$this->ID}" : '')
+		));
+
+		if ($other) {
+			$result->error(
+				"The name \"{$this->Name}\" is already in use on this schema, "
+				. ' please choose another one.'
 			);
 		}
 
