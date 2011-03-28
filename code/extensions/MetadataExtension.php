@@ -3,6 +3,9 @@
  * An extension that must be applied to an object in order for it to have the
  * ability to have metadata attached to it.
  *
+ * NOTE: You can use a "canApplySchemas" method in order to control whether a
+ * user can apply manage the schemas attached to the object.
+ *
  * @package silverstripe-metadata
  */
 class MetadataExtension extends DataObjectDecorator {
@@ -196,6 +199,11 @@ class MetadataExtension extends DataObjectDecorator {
 		$linkedSchemas->setValue($this->getAttachedSchemas()->map('ID', 'ID'));
 		$linkedSchemas->setDefaultItems($inherited);
 		$linkedSchemas->setDisabledItems($inherited);
+
+		$canApply = $this->owner->extendedCan('canApplySchemas', Member::currentUser());
+		if ($canApply === false) {
+			$linkedSchemas->setDisabled(true);
+		}
 
 		if ($this->owner->hasExtension('Hierarchy')) {
 			$fields->addFieldToTab('Root.Metadata', new LiteralField(
