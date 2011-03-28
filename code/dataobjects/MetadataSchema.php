@@ -12,6 +12,10 @@ class MetadataSchema extends DataObject {
 		'Description' => 'Text'
 	);
 
+	public static $indexes = array(
+		'NameUnique' => array('type' => 'unique', 'value' => 'Name')
+	);
+
 	public static $has_many = array(
 		'Fields' => 'MetadataField',
 		'Links'  => 'MetadataSchemaLink'
@@ -86,6 +90,18 @@ class MetadataSchema extends DataObject {
 			$result->error(
 				'The schema name can only contain alphanumeric characters,'
 				. ' underscores and periods.'
+			);
+		}
+
+		$other = DataObject::get_one('MetadataSchema', sprintf(
+			'"Name" = \'%s\' %s',
+			Convert::raw2sql($this->Name),
+			($this->ID ? "AND \"MetadataSchema\".\"ID\" <> {$this->ID}" : '')
+		));
+
+		if ($other) {
+			$result->error(
+				"The name \"{$this->Name}\" is already in use, please choose another one."
 			);
 		}
 
