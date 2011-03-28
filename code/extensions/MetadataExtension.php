@@ -183,6 +183,50 @@ class MetadataExtension extends DataObjectDecorator {
 		return $field->process($raw, $this->owner);
 	}
 
+	/**
+	 * Returns all the metadata fields for a schema name encased in standard
+	 * HTML <meta> tags.
+	 *
+	 * @param  string $schema
+	 * @return string
+	 */
+	public function MetadataMetaTags($schema) {
+		$result = '';
+		$cache  = SS_Cache::factory('MetadataExtension');
+		$key    = md5(implode('', array(
+			'MetadataMetaTags', $this->owner->class, $this->owner->ID, $this->owner->LastEdited
+		)));
+
+		if ($result = $cache->load($key)) {
+			return $result;
+		}
+
+		if (!$schema = $this->getSchemas()->find('Name', $schema)) {
+			return;
+		}
+
+		foreach ($schema->Fields() as $field) {
+			$value = $this->Metadata($schema->Name, $field->Name);
+
+			if (!$value || ($value instanceof DBField && !$value->hasValue())) {
+				continue;
+			}
+
+			if (is_object($value)) {
+				$value = $value instanceof DBField ? $value->Nice() : $value->getTitle();
+			}
+
+			$result .= sprintf(
+				"<meta name=\"%s\" content=\"%s\" />\n",
+				Convert::raw2att($field->Name),
+				Convert::raw2att($this->Metadata($schema->Name, $field->Name))
+			);
+		}
+
+		$cache->save($result, $key);
+		return $result;
+	}
+
 	public function updateCMSFields(FieldSet $fields) {
 		if (!$allSchemas = DataObject::get('MetadataSchema')) {
 			return;
