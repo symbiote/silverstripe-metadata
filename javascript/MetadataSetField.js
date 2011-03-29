@@ -1,9 +1,7 @@
 ;(function($) {
 	$(".ss-metdatasetfield").livequery(function() {
 		$(this).accordion({
-			active: false,
-			autoHeight: true,
-			collapsible: true
+			active: false, collapsible: true
 		});
 		
 		$(".ss-metadatasetfield-showreplacements", this).click(function() {
@@ -20,5 +18,18 @@
 			
 			return false;
 		});
+	});
+	
+	/**
+	 * Hacky workaround to make the accordion height correct in a hidden tab.
+	 */
+	$("#tab-Root_Metadata").live("click", function() {
+		setTimeout(function() {
+			$("#Root_Metadata .ss-metdatasetfield")
+				.accordion("destroy")
+				.accordion({
+					active: false, collapsible: true
+				});
+		}, 5);
 	});
 })(jQuery);
