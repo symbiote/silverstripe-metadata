@@ -139,18 +139,18 @@ class MetadataExtension extends DataObjectDecorator {
 	/**
 	 * Returns a raw metadata value (i.e. not run through a process method).
 	 *
-	 * @param  string $schema
-	 * @param  string $field
+	 * @param  MetadataSchema|string $schema
+	 * @param  MetadataField|string $field
 	 * @return string
 	 */
 	public function getRawMetadataValue($schema, $field) {
 		$metadata = $this->getAllMetadata();
 
-		if (!$schema = $this->getSchemas()->find('Name', $schema)) {
+		if (!$schema instanceof MetadataSchema && !$schema = $this->getSchemas()->find('Name', $schema)) {
 			return;
 		}
 
-		if (!$field = $schema->Fields()->find('Name', $field)) {
+		if (!$field instanceof MetadataField && !$field = $schema->Fields()->find('Name', $field)) {
 			return;
 		}
 
@@ -165,24 +165,27 @@ class MetadataExtension extends DataObjectDecorator {
 	 * Returns a metadata value if it exists for a schema and field name, suitable
 	 * for injection into a template.
 	 *
-	 * @param  string $schema
-	 * @param  string $field
+	 * NOTE: This can potentially be quite expensive with default and cascading
+	 * values, so results should be cached.
+	 *
+	 * @param  MetadataSchema|string $schema
+	 * @param  MetadataField|string $field
 	 * @return mixed
 	 */
 	public function Metadata($schema, $field) {
+		if (!$schema instanceof MetadataSchema && !$schema = $this->getSchemas()->find('Name', $schema)) {
+			return;
+		}
+
+		if (!$field instanceof MetadataField && !$field = $schema->Fields()->find('Name', $field)) {
+			return;
+		}
+
 		$raw  = $this->getRawMetadataValue($schema, $field);
 		$hier = $this->owner->hasExtension('Hierarchy');
 
-		if (!$schema = $this->getSchemas()->find('Name', $schema)) {
-			return;
-		}
-
-		if (!$field = $schema->Fields()->find('Name', $field)) {
-			return;
-		}
-
 		if (!$raw && $hier && $field->Cascade && $parent = $this->owner->Parent()) {
-			return $parent->Metadata($schema->Name, $field->Name);
+			return $parent->Metadata($schema, $field);
 		}
 
 		return $field->process($raw, $this->owner);
@@ -211,7 +214,7 @@ class MetadataExtension extends DataObjectDecorator {
 		}
 
 		foreach ($schema->Fields() as $field) {
-			$value = $this->Metadata($schema->Name, $field->Name);
+			$value = $this->Metadata($schema, $field);
 
 			if (!$value || ($value instanceof DBField && !$value->hasValue())) {
 				continue;
