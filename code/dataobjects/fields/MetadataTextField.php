@@ -16,7 +16,7 @@ class MetadataTextField extends MetadataField {
 		return 'Text Field';
 	}
 
-	protected $record;
+	protected $processedRecord;
 
 	public function getCMSFields() {
 		$fields = parent::getCMSFields();
@@ -63,7 +63,7 @@ class MetadataTextField extends MetadataField {
 	 * @return string
 	 */
 	public function process($value, $record) {
-		$this->record = $record;
+		$this->processedRecord = $record;
 
 		return preg_replace_callback(
 			'/\$([A-Za-z_][A-Za-z0-9_]*)/',
@@ -84,7 +84,7 @@ class MetadataTextField extends MetadataField {
 	}
 
 	public function replaceKeyword($matches) {
-		$record = $this->record;
+		$record = $this->processedRecord;
 		$field  = $matches[1];
 
 		if ($record->hasField($field)) {
