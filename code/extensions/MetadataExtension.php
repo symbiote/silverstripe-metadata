@@ -205,8 +205,8 @@ class MetadataExtension extends DataObjectDecorator {
 			'MetadataMetaTags', $this->owner->class, $this->owner->ID, $this->owner->LastEdited
 		)));
 
-		if ($result = $cache->load($key)) {
-			return $result;
+		if ($cached = $cache->load($key)) {
+			return $cached;
 		}
 
 		if (!$schema = $this->getSchemas()->find('Name', $schema)) {
