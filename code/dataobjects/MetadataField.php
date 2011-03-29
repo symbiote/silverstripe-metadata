@@ -11,6 +11,7 @@ class MetadataField extends DataObject {
 		'Name'     => 'Varchar(100)',
 		'Title'    => 'Varchar(255)',
 		'Required' => 'Boolean',
+		'Cascade'  => 'Boolean',
 		'Default'  => 'Text'
 	);
 
@@ -27,8 +28,9 @@ class MetadataField extends DataObject {
 	);
 
 	public static $field_labels = array(
-		'Name'  => 'Field name',
-		'Title' => 'Title (human readable name)'
+		'Name'    => 'Field name',
+		'Title'   => 'Title (human readable name)',
+		'Cascade' => 'Cascade to child objects without a value set'
 	);
 
 	/**

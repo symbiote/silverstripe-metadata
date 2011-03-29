@@ -170,7 +170,8 @@ class MetadataExtension extends DataObjectDecorator {
 	 * @return mixed
 	 */
 	public function Metadata($schema, $field) {
-		$raw = $this->getRawMetadataValue($schema, $field);
+		$raw  = $this->getRawMetadataValue($schema, $field);
+		$hier = $this->owner->hasExtension('Hierarchy');
 
 		if (!$schema = $this->getSchemas()->find('Name', $schema)) {
 			return;
@@ -178,6 +179,10 @@ class MetadataExtension extends DataObjectDecorator {
 
 		if (!$field = $schema->Fields()->find('Name', $field)) {
 			return;
+		}
+
+		if (!$raw && $hier && $field->Cascade && $parent = $this->owner->Parent()) {
+			return $parent->Metadata($schema->Name, $field->Name);
 		}
 
 		return $field->process($raw, $this->owner);
@@ -219,7 +224,7 @@ class MetadataExtension extends DataObjectDecorator {
 			$result .= sprintf(
 				"<meta name=\"%s\" content=\"%s\" />\n",
 				Convert::raw2att($field->Name),
-				Convert::raw2att($this->Metadata($schema->Name, $field->Name))
+				Convert::raw2att($value)
 			);
 		}
 
