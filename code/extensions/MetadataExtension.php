@@ -75,6 +75,8 @@ class MetadataExtension extends DataObjectDecorator {
 	 * @return DataObjectSet
 	 */
 	public function getInheritedSchemas() {
+		$result = new DataObjectSet();
+
 		if (!$this->owner->hasExtension('Hierarchy')) {
 			return new DataObjectSet();
 		}
@@ -85,23 +87,39 @@ class MetadataExtension extends DataObjectDecorator {
 		foreach ($parents as $parent) {
 			$ids[] = $parent->ID;
 		}
+		
+		if (count($ids)) {
+			$filter = sprintf(
+				'"MetadataSchema"."ID" = "MetadataSchemaLink"."SchemaID"'
+				. ' AND "MetadataSchemaLink"."ParentClass" = \'%s\''
+				. ' AND "MetadataSchemaLink"."ParentID" IN (%s)',
+				ClassInfo::baseDataClass($this->owner->class),
+				implode(', ', $ids)
+			);
 
-		$filter = sprintf(
-			'"MetadataSchema"."ID" = "MetadataSchemaLink"."SchemaID"'
-			. ' AND "MetadataSchemaLink"."ParentClass" = \'%s\''
-			. ' AND "MetadataSchemaLink"."ParentID" IN (%s)',
-			ClassInfo::baseDataClass($this->owner->class),
-			implode(', ', $ids)
-		);
+			$result = DataObject::get(
+				'MetadataSchema',
+				null,
+				null,
+				'INNER JOIN "MetadataSchemaLink" ON ' . $filter
+			);
+			if (!$result) {
+				$result = new DataObjectSet();
+			}
+		}
 
-		$result = DataObject::get(
-			'MetadataSchema',
-			null,
-			null,
-			'INNER JOIN "MetadataSchemaLink" ON ' . $filter
-		);
+		if ($this->owner instanceof SiteTree) {
+			// Check SiteConfig too
+			$config = SiteConfig::current_site_config();
+			if ($config->hasExtension('MetadataExtension')) {
+				$schemas = $config->getAttachedSchemas();
+				if ($schemas && $schemas->count()) {
+					$result->merge($schemas);
+				}
+			}
+		}
 
-		return $result ? $result : new DataObjectSet();
+		return $result;
 	}
 
 	/**
@@ -184,7 +202,14 @@ class MetadataExtension extends DataObjectDecorator {
 		$raw  = $this->getRawMetadataValue($schema, $field);
 		$hier = $this->owner->hasExtension('Hierarchy');
 
-		if (!$raw && $hier && $field->Cascade && $parent = $this->owner->Parent()) {
+		$parent = null;
+		// if hierarchy is applicable, and we're a sitetree object, and at the root
+		if ($hier && !$this->owner->ParentID && $this->owner instanceof SiteTree) {
+			if (SiteConfig::current_site_config()->hasExtension('MetadataExtension')) {
+				$parent = SiteConfig::current_site_config();
+			}
+		}
+		if (!$raw && $hier && $field->Cascade && $parent) {
 			return $parent->Metadata($schema, $field);
 		}
 
