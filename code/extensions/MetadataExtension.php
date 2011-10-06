@@ -103,8 +103,11 @@ class MetadataExtension extends DataObjectDecorator {
 				null,
 				'INNER JOIN "MetadataSchemaLink" ON ' . $filter
 			);
+			if (!$result) {
+				$result = new DataObjectSet();
+			}
 		}
-		
+
 		if ($this->owner instanceof SiteTree) {
 			// Check SiteConfig too
 			$config = SiteConfig::current_site_config();
