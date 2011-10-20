@@ -95,6 +95,9 @@ class MetadataSetField extends FormField {
 	 */
 	public function Schemas() {
 		$record  = $this->form->getRecord();
+		if (!$record) {
+			return;
+		}
 		$schemas = $record->getSchemas();
 		$result  = new DataObjectSet();
 

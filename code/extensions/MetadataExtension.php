@@ -261,11 +261,18 @@ class MetadataExtension extends DataObjectDecorator {
 	}
 
 	public function updateCMSFields(FieldSet $fields) {
+		
 		if (!$allSchemas = DataObject::get('MetadataSchema')) {
 			return;
 		}
+		
+		$tabName = 'Root.Metadata';
+		$rootTab = $fields->fieldByName('Root');
+		if (!$rootTab) {
+			$tabName = 'BottomRoot.Metadata';
+		}
 
-		$fields->addFieldsToTab('Root.Metadata', array(
+		$fields->addFieldsToTab($tabName, array(
 			new HeaderField('MetadataInfoHeader', 'Metadata Information'),
 			new MetadataSetField($this->owner, 'MetadataRaw'),
 			new HeaderField('MetadataSchemasHeader', 'Metadata Schemas'),
@@ -283,7 +290,7 @@ class MetadataExtension extends DataObjectDecorator {
 		}
 
 		if ($this->owner->hasExtension('Hierarchy')) {
-			$fields->addFieldToTab('Root.Metadata', new LiteralField(
+			$fields->addFieldToTab($tabName, new LiteralField(
 				'SchemaAppliedToChildrenNote',
 				'<p>Any metadata schemas selected will also be applied to this'
 				. " item's children.</p>"
