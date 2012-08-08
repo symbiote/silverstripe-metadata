@@ -44,7 +44,7 @@ class MetadataDateField extends MetadataField {
 	/**
 	 * @return Date
 	 */
-	public function process($value) {
+	public function process($value, $record) {
 		switch ($this->Type) {
 			case 'datetime': return DBField::create('SS_Datetime', $value);
 			case 'date':     return DBField::create('Date', $value);

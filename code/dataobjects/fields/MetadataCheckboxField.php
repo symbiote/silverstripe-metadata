@@ -18,7 +18,7 @@ class MetadataCheckboxField extends MetadataField {
 	/**
 	 * @return Boolean
 	 */
-	public function process($value) {
+	public function process($value, $record) {
 		return DBField::create('Boolean', $value);
 	}
 

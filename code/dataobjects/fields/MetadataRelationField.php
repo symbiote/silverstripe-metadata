@@ -30,7 +30,7 @@ class MetadataRelationField extends MetadataField {
 	/**
 	 * @return DataObject
 	 */
-	public function process($value) {
+	public function process($value, $record) {
 		if (ctype_digit($value)) {
 			return DataObject::get_by_id($this->SubjectClass, $value);
 		}

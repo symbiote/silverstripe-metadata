@@ -8,11 +8,12 @@
 class MetadataField extends DataObject {
 
 	public static $db = array(
-		'Name'     => 'Varchar(100)',
-		'Title'    => 'Varchar(255)',
-		'Required' => 'Boolean',
-		'Cascade'  => 'Boolean',
-		'Default'  => 'Text'
+		'Name'     	=> 'Varchar(100)',
+		'Title'    	=> 'Varchar(255)',
+		'Required' 	=> 'Boolean',
+		'Cascade'  	=> 'Boolean',
+		'Default'  	=> 'Text',
+		'Sort'  	=> 'Int'
 	);
 
 	public static $indexes = array(
@@ -21,10 +22,6 @@ class MetadataField extends DataObject {
 
 	public static $has_one = array(
 		'Schema' => 'MetadataSchema'
-	);
-
-	public static $extensions = array(
-		'Orderable'
 	);
 
 	public static $field_labels = array(

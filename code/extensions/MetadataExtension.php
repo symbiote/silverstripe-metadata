@@ -8,18 +8,18 @@
  *
  * @package silverstripe-metadata
  */
-class MetadataExtension extends DataObjectDecorator {
+class MetadataExtension extends DataExtension {
 
 	/**
 	 * @var DataObjectSet
 	 */
 	protected $schemas;
 
-	public function extraStatics() {
-		return array('db' => array(
-			'MetadataRaw' => 'Text'
-		));
-	}
+	
+	static $db =  array(
+		'MetadataRaw' => 'Text'
+	);
+
 
 	/**
 	 * Returns all the schema objects attached to this object, or any of its
@@ -58,13 +58,10 @@ class MetadataExtension extends DataObjectDecorator {
 			$this->owner->ID
 		);
 
-		$schemas = DataObject::get(
-			'MetadataSchema',
-			null,
-			null,
-			'INNER JOIN "MetadataSchemaLink" ON ' . $filter);
 
-		return $schemas ? $schemas : new DataObjectSet();
+		$schemas = MetadataSchema::get()->innerJoin('MetadataSchemaLink', $filter);
+
+		return $schemas ? new ArrayList($schemas->toArray()) : new ArrayList();
 	}
 
 	/**
@@ -75,10 +72,10 @@ class MetadataExtension extends DataObjectDecorator {
 	 * @return DataObjectSet
 	 */
 	public function getInheritedSchemas() {
-		$result = new DataObjectSet();
+		$result = new ArrayList();
 
 		if (!$this->owner->hasExtension('Hierarchy')) {
-			return new DataObjectSet();
+			return new ArrayList();
 		}
 
 		$ids     = array();
@@ -103,8 +100,10 @@ class MetadataExtension extends DataObjectDecorator {
 				null,
 				'INNER JOIN "MetadataSchemaLink" ON ' . $filter
 			);
-			if (!$result) {
-				$result = new DataObjectSet();
+			if ($result) {
+				$result = new ArrayList($result->toArray());
+			}else{
+				$result = new ArrayList();
 			}
 		}
 
@@ -260,7 +259,7 @@ class MetadataExtension extends DataObjectDecorator {
 		return $result;
 	}
 
-	public function updateCMSFields(FieldSet $fields) {
+	public function updateCMSFields(FieldList $fields) {
 		
 		if (!$allSchemas = DataObject::get('MetadataSchema')) {
 			return;

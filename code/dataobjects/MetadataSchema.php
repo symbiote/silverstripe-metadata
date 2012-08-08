@@ -36,10 +36,10 @@ class MetadataSchema extends DataObject {
 	);
 
 	/**
-	 * @return FieldSet
+	 * @return FieldList
 	 */
 	public function getFormFields() {
-		$fields = new FieldSet();
+		$fields = new FieldList();
 
 		foreach ($this->Fields() as $field) {
 			$fields->push($field->getFormField());
@@ -60,9 +60,25 @@ class MetadataSchema extends DataObject {
 			$fields->removeByName('Fields');
 			$fields->removeByName('Links');
 
+			$gridFieldConfig = GridFieldConfig::create()->addComponents(
+					new GridFieldAddNewMetadataFieldButton(),
+					new GridFieldFilterHeader(),
+					new GridFieldSortableHeader(),
+					new GridFieldDataColumns(),
+					new GridFieldPaginator(15),
+					new GridFieldEditButton(),
+					new GridFieldDeleteAction(),
+					new GridFieldDetailForm(),
+					new GridFieldSortableRows('Sort'),
+					new MetaDataFieldAddForm
+				);
+
+			$gridField = new GridField('Fields', 'MetaData Fields', $this->Fields(), $gridFieldConfig);
+
 			$fields->addFieldsToTab('Root.Main', array(
 				new HeaderField('MetadataFieldsHeader', 'Metadata Fields'),
-				new MetadataFieldsTableField($this, 'Fields', 'MetadataField')
+				//new MetadataFieldsTableField($this, 'Fields', 'MetadataField')
+				$gridField
 			));
 		} else {
 			$fields->addFieldToTab('Root.Main', new LiteralField(
