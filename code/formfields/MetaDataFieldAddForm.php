@@ -19,11 +19,7 @@ class MetaDataFieldAddForm implements GridField_URLHandler {
 
     public function addfield($gridField, $request) {
 		$controller = $gridField->getForm()->Controller();
-		if(is_numeric($request->param('ID'))) {
-			$record = $gridField->getList()->byId($request->param("ID"));
-		} else {
-			$record = Object::create($gridField->getModelClass());	
-		}
+		$record = singleton('MetadataField');
 
 		$handler = Object::create('MetaDataFieldAddForm_ItemRequest', $gridField, $this, $record, $controller, $this->name);
 		$handler->setTemplate($this->template);
@@ -48,6 +44,11 @@ class MetaDataFieldAddForm implements GridField_URLHandler {
     protected $component;
     protected $record;
 
+    static $url_handlers = array(
+		'$Action!' => '$Action',
+		'' => 'add',
+	);
+
     public function __construct($gridField, $component, $record, $popupController, $popupFormName) {
         parent::__construct($gridField, $component, $record, $popupController, $popupFormName);
     }
@@ -56,7 +57,7 @@ class MetaDataFieldAddForm implements GridField_URLHandler {
 		return Controller::join_links($this->gridField->Link('add'), $action);
 	}
 
-	function edit($request) {
+	function add($request) {
 		$controller = $this->getToplevelController();
 		$form = $this->AddForm($this->gridField, $request);
 
@@ -81,7 +82,6 @@ class MetaDataFieldAddForm implements GridField_URLHandler {
 	 * @return Form
 	 */
 	public function AddForm() {
-		
 		$fields = new FieldList(
 			new LiteralField('SelectFieldType', '<p><strong>Please select a field type to add:</strong></p>'),
 			new DropdownField('ClassName', '', $this->getFieldTypes(), null, null, true)
@@ -102,7 +102,7 @@ class MetaDataFieldAddForm implements GridField_URLHandler {
 		$form->addExtraClass('cms-content cms-edit-form center ss-tabset stacked');
 		$form->setAttribute('data-pjax-fragment', 'CurrentForm Content');
 		if($form->Fields()->hasTabset()) $form->Fields()->findOrMakeTab('Root')->setTemplate('CMSTabSet');
-
+		//var_dump($this->popupController); die;
 		$parents = $this->popupController->Breadcrumbs(false)->items;
 		$form->Backlink = array_pop($parents)->Link; 
 
@@ -121,7 +121,6 @@ class MetaDataFieldAddForm implements GridField_URLHandler {
 			$field->write();
 			return Controller::curr()->redirect(Controller::join_links($this->gridField->Link(), 'item',  $field->ID, 'edit'));
 		}else{
-			//$form->sessionMessage('Could not add Field, not a valid class', 'bad');
 			return Controller::curr()->redirectBack();
 		}
 	

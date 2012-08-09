@@ -27,8 +27,21 @@ class MetadataField extends DataObject {
 	public static $field_labels = array(
 		'Name'    => 'Field name',
 		'Title'   => 'Title (human readable name)',
-		'Cascade' => 'Cascade to child objects without a value set'
+		'Cascade' => 'Cascade to child objects without a value set',
 	);
+
+	public static $summary_fields = array(
+		'Name',
+		'Title',
+		'Type'
+	);
+
+	public function getCMSFields(){
+		$fields = parent::getCMSFields();
+		$fields->addFieldToTab('Root.Main', new ReadOnlyField('FieldType', 'Field Type', $this->Type()), 'Name');
+		$fields->removeByName('Sort');
+		return $fields;
+	}
 
 	/**
 	 * Returns the title that describes the field type.
@@ -138,6 +151,23 @@ class MetadataField extends DataObject {
 		}
 
 		return $result;
+	}
+
+
+	/**
+	 * @return string - label for descibing the type of field (for $summary_fields)
+	 */
+	public function Type(){
+		return str_replace('Metadata', '', $this->ClassName);
+	}
+
+
+	public function onBeforeWrite(){
+		parent::onBeforeWrite();
+
+		if(!$this->Title){
+			$this->Title = 'New ' . $this->ClassName;
+		}
 	}
 
 }

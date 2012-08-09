@@ -56,6 +56,9 @@ class MetadataSelectField extends MetadataField {
 	}
 
 	public function getCMSFields() {
+
+		Requirements::javascript(METADATA_DIR . '/javascript/MetadataSelectFieldCms.js');
+
 		$fields = parent::getCMSFields();
 
 		$fields->removeByName('Options');
@@ -68,38 +71,38 @@ class MetadataSelectField extends MetadataField {
 		$default->setTitle('Default option(s)');
 		$default->setValue($this->Default);
 
+		$gridFieldConfig = GridFieldConfig::create()->addComponents(
+			new GridFieldAddNewButton(),
+			new GridFieldFilterHeader(),
+			new GridFieldSortableHeader(),
+			new GridFieldDataColumns(),
+			new GridFieldPaginator(15),
+			new GridFieldEditButton(),
+			new GridFieldDeleteAction(),
+			new GridFieldDetailForm(),
+			new GridFieldSortableRows('Sort'),
+			new MetaDataFieldAddForm
+		);
+		$gridField = new GridField('Options', 'Options', $this->Options(), $gridFieldConfig);
+
 		$fields->addFieldsToTab('Root.Main', array(
 			new OptionsetField('Type', 'Field type', array(
 				'dropdown'    => 'Dropdown select field',
 				'optionset'   => 'Set of radio options',
 				'checkboxset' => 'Checkbox set field (allows multiple selection)'
 			)),
-			new TableField(
-				'Options',
-				'MetadataSelectFieldOption',
-				null,
-				array(
-					'Key'   => 'TextField',
-					'Value' => 'TextField'
-				),
-				'ParentID',
-				$this->ID
-			),
+			new HeaderField('OptionsHeader', 'Select Options'),
+			$gridField,
 			$default,
 			new OptionsetField('EmptyMode', 'Empty first option', array(
 				'none'  => 'Do not display an empty default option',
 				'blank' => 'Display an empty option as the first option',
 				'text'  => 'Display an empty option with text as the first option'
 			)),
-			new TextField('EmptyText', '')
+			new TextField('EmptyText', 'Empty Text')
 		));
 
 		return $fields;
-	}
-
-	public function getRequirementsForPopup() {
-		Requirements::javascript(THIRDPARTY_DIR . '/jquery/jquery.js');
-		Requirements::javascript(METADATA_DIR . '/javascript/MetadataSelectFieldCms.js');
 	}
 
 }

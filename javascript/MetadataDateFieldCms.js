@@ -1,8 +1,21 @@
 ;(function($) {
-	function toggleDefault() {
-		$("#Default").toggle($("#DefaultType input:checked").val() == "specific");
-	}
-	
-	$(toggleDefault);
-	$("#DefaultType input").change(toggleDefault);
+	$.entwine('ss', function($){
+		
+		$("#DefaultType input").entwine({
+			onmatch : function(){
+				$('#Default').toggleDefault();
+			},
+
+			onchange : function(){
+				$('#Default').toggleDefault();
+			}
+		});
+
+		$("#Default").entwine({
+			toggleDefault : function(){
+				$("#DefaultType input:checked").val() == "specific" ? $(this).show() : $(this).hide();
+			}
+		});
+		
+	});
 })(jQuery);
