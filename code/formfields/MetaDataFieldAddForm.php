@@ -91,8 +91,21 @@ class MetaDataFieldAddForm implements GridField_URLHandler {
 			$fields->push(new HiddenField('SchemaID', '', $schemaID)); 
 		}
 
-		$actions = new FieldList(FormAction::create('doAddField', 'Go')
-			->setUseButtonTag(true)->addExtraClass('ss-ui-action-constructive')->setAttribute('data-icon', 'add'));
+		$actions = new FieldList(
+			FormAction::create('doAddField', 'Create')
+				->setUseButtonTag(true)->addExtraClass('ss-ui-action-constructive')->setAttribute('data-icon', 'accept')
+		);
+
+		// Add a Cancel link which is a button-like link and link back to one level up.
+		$curmbs = $this->Breadcrumbs();
+		if($curmbs && $curmbs->count()>=2){
+			$one_level_up = $curmbs->offsetGet($curmbs->count()-2);
+			$text = "
+			<a class=\"crumb ss-ui-button ss-ui-action-destructive cms-panel-link ui-corner-all\" href=\"".$one_level_up->Link."\">
+				Cancel
+			</a>";
+			$actions->push(new LiteralField('cancelbutton', $text));
+		}
 		
 		$form = new Form($this, 'AddForm', $fields, $actions);
 
@@ -122,9 +135,7 @@ class MetaDataFieldAddForm implements GridField_URLHandler {
 			return Controller::curr()->redirect(Controller::join_links($this->gridField->Link(), 'item',  $field->ID, 'edit'));
 		}else{
 			return Controller::curr()->redirectBack();
-		}
-	
-		
+		}	
 	}
 
 

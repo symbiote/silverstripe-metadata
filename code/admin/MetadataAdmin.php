@@ -16,28 +16,28 @@ class MetadataAdmin extends ModelAdmin {
 
 }
 
-//class MetadataAdmin_CollectionController extends ModelAdmin_CollectionController {
+// class MetadataAdmin_CollectionController extends ModelAdmin_CollectionController {
 
-	/*
-	 * Works around in issue with ModelAdmin not validating created objects.
-	 */
-	// public function doCreate($data, $form, $request) {
-	// 	// First run the validation so we don't create an empty record if
-	// 	// it fails.
-	// 	$form->saveInto($schema = new MetadataSchema());
-	// 	$result = $schema->validate();
+// 	/*
+// 	 * Works around in issue with ModelAdmin not validating created objects.
+// 	 */
+// 	// public function doCreate($data, $form, $request) {
+// 	// 	// First run the validation so we don't create an empty record if
+// 	// 	// it fails.
+// 	// 	$form->saveInto($schema = new MetadataSchema());
+// 	// 	$result = $schema->validate();
 
-	// 	if (!$result->valid()) {
-	// 		$form->sessionMessage($result->message(), 'bad');
+// 	// 	if (!$result->valid()) {
+// 	// 		$form->sessionMessage($result->message(), 'bad');
 
-	// 		if ($this->isAjax()) {
-	// 			return $form->forAjaxTemplate();
-	// 		} else {
-	// 			return $this->redirectBack();
-	// 		}
-	// 	}
+// 	// 		if ($this->isAjax()) {
+// 	// 			return $form->forAjaxTemplate();
+// 	// 		} else {
+// 	// 			return $this->redirectBack();
+// 	// 		}
+// 	// 	}
 
-	// 	return parent::doCreate($data, $form, $request);
-	// }
+// 	// 	return parent::doCreate($data, $form, $request);
+// 	// }
 
-//}
+// }
