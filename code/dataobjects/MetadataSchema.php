@@ -41,7 +41,7 @@ class MetadataSchema extends DataObject {
 	public function getFormFields() {
 		$fields = new FieldList();
 
-		foreach ($this->Fields() as $field) {
+		foreach ($this->Fields()->sort('Sort') as $field) {
 			$fields->push($field->getFormField());
 		}
 

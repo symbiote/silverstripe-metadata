@@ -18,13 +18,16 @@ class MetadataRelationField extends MetadataField {
 	public function getFormField() {
 		$class = $this->SubjectClass;
 		$title = singleton($class)->hasField('Title') ? 'Title' : 'Name';
-		$map   = new SQLMap(singleton($class)->extendedSQL(), 'ID', $title);
+		$objects = DataObject::get($class);
+		$map = $objects ? $objects->map('ID', $title) : array();
+		$emptyString = count($map) ? "Select $class" : "No $class objects found";
+ 
 
 		return new DropdownField(
 			$this->getFormFieldName(),
 			$this->Title,
 			$map,
-			null, null, ' ');
+			null, null, $emptyString);
 	}
 
 	/**

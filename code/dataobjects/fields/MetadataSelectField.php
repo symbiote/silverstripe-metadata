@@ -86,22 +86,26 @@ class MetadataSelectField extends MetadataField {
 		$gridField = new GridField('Options', 'Options', $this->Options(), $gridFieldConfig);
 
 		$fields->addFieldsToTab('Root.Main', array(
-			new OptionsetField('Type', 'Field type', array(
+			new DropdownField('Type', 'Field type', array(
 				'dropdown'    => 'Dropdown select field',
 				'optionset'   => 'Set of radio options',
 				'checkboxset' => 'Checkbox set field (allows multiple selection)'
-			)),
-			new HeaderField('OptionsHeader', 'Select Options'),
-			$gridField,
+			))
+		));
+
+		$fields->addFieldsToTab('Root.Options', array(
 			$default,
 			new OptionsetField('EmptyMode', 'Empty first option', array(
 				'none'  => 'Do not display an empty default option',
 				'blank' => 'Display an empty option as the first option',
 				'text'  => 'Display an empty option with text as the first option'
 			)),
-			new TextField('EmptyText', 'Empty Text')
+			new TextField('EmptyText', 'Empty Text'),
+			new HeaderField('OptionsHeader', 'Options'),
+			$gridField
 		));
 
+		
 		return $fields;
 	}
 

@@ -40,6 +40,7 @@ class MetadataField extends DataObject {
 		$fields = parent::getCMSFields();
 		$fields->addFieldToTab('Root.Main', new ReadOnlyField('FieldType', 'Field Type', $this->Type()), 'Name');
 		$fields->removeByName('Sort');
+		$fields->removeByName('SchemaID');
 		return $fields;
 	}
 
@@ -99,11 +100,15 @@ class MetadataField extends DataObject {
 	 * @param  Validator $validator
 	 */
 	public function validateValue($value, $validator) {
-		if ($this->Required && !strlen($value)) {
+		if(!$this->Required) return;
+
+		if(is_array($value)) return; //  eg. checkbox set values
+
+		if (!strlen($value)) {
 			$validator->validationError('MetadataRaw', sprintf(
 				'The metadata field "%s" on the "%s" schema is required',
 				$this->Title, $this->Schema()->Title
-			));
+			), 'validation');
 		}
 	}
 

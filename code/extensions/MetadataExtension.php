@@ -69,7 +69,7 @@ class MetadataExtension extends DataExtension {
 	 * a set of a schema objects attached to any ancestors (which should be
 	 * present on this object).
 	 *
-	 * @return DataObjectSet
+	 * @return ArrayList
 	 */
 	public function getInheritedSchemas() {
 		$result = new ArrayList();
@@ -94,12 +94,8 @@ class MetadataExtension extends DataExtension {
 				implode(', ', $ids)
 			);
 
-			$result = DataObject::get(
-				'MetadataSchema',
-				null,
-				null,
-				'INNER JOIN "MetadataSchemaLink" ON ' . $filter
-			);
+			$result = MetadataSchema::get()->innerJoin('MetadataSchemaLink', $filter);
+
 			if ($result) {
 				$result = new ArrayList($result->toArray());
 			}else{
@@ -208,6 +204,11 @@ class MetadataExtension extends DataExtension {
 				$parent = SiteConfig::current_site_config();
 			}
 		}
+
+		if(!$parent && $this->owner->ParentID){
+			$parent = $this->owner->Parent();
+		}
+
 		if (!$raw && $hier && $field->Cascade && $parent) {
 			return $parent->Metadata($schema, $field);
 		}
