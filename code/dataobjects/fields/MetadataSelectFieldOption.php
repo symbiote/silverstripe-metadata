@@ -39,4 +39,10 @@ class MetadataSelectFieldOption extends DataObject {
 		return 'Option';
 	}
 
+	public function getCMSFields(){
+		$fields = parent::getCMSFields();
+		$fields->removeByName('ParentID');
+		return $fields;
+	}
+
 }

@@ -44,11 +44,11 @@ class MetadataDateField extends MetadataField {
 	/**
 	 * @return Date
 	 */
-	public function process($value) {
+	public function process($value, $record) {
 		switch ($this->Type) {
-			case 'datetime': return DBField::create('SS_Datetime', $value);
-			case 'date':     return DBField::create('Date', $value);
-			case 'time':     return DBField::create('Time', $value);
+			case 'datetime': return DBField::create_field('SS_Datetime', $value);
+			case 'date':     return DBField::create_field('Date', $value);
+			case 'time':     return DBField::create_field('Time', $value);
 		}
 	}
 
@@ -61,12 +61,14 @@ class MetadataDateField extends MetadataField {
 	}
 
 	public function getCMSFields() {
+		Requirements::javascript(METADATA_DIR . '/javascript/MetadataDateFieldCms.js');
+
 		$fields = parent::getCMSFields();
 
 		$fields->removeByName('Default');
 		$default = $this->getFormField();
 		$default->setName('Default');
-		$default->setTitle('');
+		$default->setTitle('Default');
 
 		$fields->addFieldsToTab('Root.Main', array(
 			new OptionsetField('Type', 'Field type', array(
@@ -82,11 +84,6 @@ class MetadataDateField extends MetadataField {
 		));
 
 		return $fields;
-	}
-
-	public function getRequirementsForPopup() {
-		Requirements::javascript(THIRDPARTY_DIR . '/jquery/jquery.js');
-		Requirements::javascript(METADATA_DIR . '/javascript/MetadataDateFieldCms.js');
 	}
 
 }

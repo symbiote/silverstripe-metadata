@@ -8,11 +8,12 @@
 class MetadataField extends DataObject {
 
 	public static $db = array(
-		'Name'     => 'Varchar(100)',
-		'Title'    => 'Varchar(255)',
-		'Required' => 'Boolean',
-		'Cascade'  => 'Boolean',
-		'Default'  => 'Text'
+		'Name'     	=> 'Varchar(100)',
+		'Title'    	=> 'Varchar(255)',
+		'Required' 	=> 'Boolean',
+		'Cascade'  	=> 'Boolean',
+		'Default'  	=> 'Text',
+		'Sort'  	=> 'Int'
 	);
 
 	public static $indexes = array(
@@ -23,15 +24,25 @@ class MetadataField extends DataObject {
 		'Schema' => 'MetadataSchema'
 	);
 
-	public static $extensions = array(
-		'Orderable'
-	);
-
 	public static $field_labels = array(
 		'Name'    => 'Field name',
 		'Title'   => 'Title (human readable name)',
-		'Cascade' => 'Cascade to child objects without a value set'
+		'Cascade' => 'Cascade to child objects without a value set',
 	);
+
+	public static $summary_fields = array(
+		'Name',
+		'Title',
+		'Type'
+	);
+
+	public function getCMSFields(){
+		$fields = parent::getCMSFields();
+		$fields->addFieldToTab('Root.Main', new ReadOnlyField('FieldType', 'Field Type', $this->Type()), 'Name');
+		$fields->removeByName('Sort');
+		$fields->removeByName('SchemaID');
+		return $fields;
+	}
 
 	/**
 	 * Returns the title that describes the field type.
@@ -89,11 +100,15 @@ class MetadataField extends DataObject {
 	 * @param  Validator $validator
 	 */
 	public function validateValue($value, $validator) {
-		if ($this->Required && !strlen($value)) {
+		if(!$this->Required) return;
+
+		if(is_array($value)) return; //  eg. checkbox set values
+
+		if (!strlen($value)) {
 			$validator->validationError('MetadataRaw', sprintf(
 				'The metadata field "%s" on the "%s" schema is required',
 				$this->Title, $this->Schema()->Title
-			));
+			), 'validation');
 		}
 	}
 
@@ -141,6 +156,23 @@ class MetadataField extends DataObject {
 		}
 
 		return $result;
+	}
+
+
+	/**
+	 * @return string - label for descibing the type of field (for $summary_fields)
+	 */
+	public function Type(){
+		return str_replace('Metadata', '', $this->ClassName);
+	}
+
+
+	public function onBeforeWrite(){
+		parent::onBeforeWrite();
+
+		if(!$this->Title){
+			$this->Title = 'New ' . $this->ClassName;
+		}
 	}
 
 }
