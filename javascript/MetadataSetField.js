@@ -1,35 +1,49 @@
 ;(function($) {
-	$(".ss-metdatasetfield").livequery(function() {
-		$(this).accordion({
-			active: false, collapsible: true
-		});
+
+	$.entwine('ss', function($){
 		
-		$(".ss-metadatasetfield-showreplacements", this).click(function() {
-			var $field  = $(this).parents(".ss-metadatasetfield");
-			var $dialog = $field.find(".ss-metadatasetfield-keywordreplacements");
-			
-			$dialog.clone().dialog({
-				modal: true,
-				resizable: false,
-				draggable: false,
-				width: 500,
-				height: 400
-			});
-			
-			return false;
+		$("#Form_EditForm .ss-metdatasetfield").entwine({
+			onmatch: function() {
+				this.accordion({
+					collapsible: true,
+					active: false
+				});
+
+				this._super();
+			},
+			onremove: function() {
+				this.accordion('destroy');
+			},
+
+			getTabSet: function() {
+				return this.closest(".ss-tabset");
+			},
+
+			fromTabSet: {
+				ontabsshow: function() {
+					this.accordion("resize");
+				}
+			}
+
 		});
+
+		$("#Form_EditForm .ss-metadatasetfield-showreplacements").entwine({
+			onclick: function(){
+				var $field  = $(this).parents(".ss-metadatasetfield");
+				var $dialog = $field.find(".ss-metadatasetfield-keywordreplacements");
+				
+				$dialog.clone().dialog({
+					modal: true,
+					resizable: false,
+					draggable: false,
+					width: 500,
+					height: 400
+				});
+				
+				return false;
+			}
+		});
+
 	});
 	
-	/**
-	 * Hacky workaround to make the accordion height correct in a hidden tab.
-	 */
-	$("#tab-Root_Metadata").live("click", function() {
-		setTimeout(function() {
-			$("#Root_Metadata .ss-metdatasetfield")
-				.accordion("destroy")
-				.accordion({
-					active: false, collapsible: true
-				});
-		}, 5);
-	});
 })(jQuery);

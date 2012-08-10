@@ -21,7 +21,7 @@ class MetadataSetField extends FormField {
 		parent::__construct($name);
 	}
 
-	public function saveInto($record) {
+	public function saveInto(DataObjectInterface $record) {
 		$schemas  = $record->getSchemas();
 		$value    = $this->Value();
 		$metadata = array();
@@ -32,14 +32,14 @@ class MetadataSetField extends FormField {
 			$namesMap = array();
 
 			foreach ($fields as $field) {
-				$brPos = strrpos($field->Name(), '[');
-				$name  = substr($field->Name(), $brPos + 1, -1);
+				$brPos = strrpos($field->getName(), '[');
+				$name  = substr($field->getName(), $brPos + 1, -1);
 
-				$namesMap[$field->Name()] = $name;
+				$namesMap[$field->getName()] = $name;
 			}
 
 			if (isset($value[$schema->Name])) foreach ($fields as $field) {
-				$fName = $field->Name();
+				$fName = $field->getName();
 				$sName = $namesMap[$fName];
 
 				if (array_key_exists($sName, $value[$schema->Name])) {
@@ -50,7 +50,7 @@ class MetadataSetField extends FormField {
 			}
 
 			foreach ($fields as $field) {
-				$name        = $namesMap[$field->Name()];
+				$name        = $namesMap[$field->getName()];
 				$schemaField = $schema->Fields()->find('Name', $name);
 				$toSave      = $schemaField->processBeforeWrite($field->dataValue(), $record);
 
@@ -78,20 +78,20 @@ class MetadataSetField extends FormField {
 		}
 	}
 
-	public function FieldHolder() {
-		Requirements::javascript(THIRDPARTY_DIR . '/jquery/jquery.js');
-		Requirements::javascript(THIRDPARTY_DIR . '/jquery-livequery/jquery.livequery.js');
-		Requirements::javascript(Director::protocol() . 'ajax.googleapis.com/ajax/libs/jqueryui/1.8.1/jquery-ui.min.js');
-		Requirements::javascript('metadata/javascript/MetadataSetField.js');
+	public function FieldHolder($properties = array()) {
 
-		Requirements::css(Director::protocol() . 'ajax.googleapis.com/ajax/libs/jqueryui/1.8.1/themes/base/jquery-ui.css');
+		Requirements::javascript(FRAMEWORK_DIR . '/thirdparty/jquery/jquery.js');
+		Requirements::javascript(FRAMEWORK_DIR . '/thirdparty/jquery-ui/jquery-ui.js');
+		Requirements::javascript(FRAMEWORK_DIR . '/thirdparty/jquery-entwine/dist/jquery.entwine-dist.js');
+		Requirements::javascript('metadata/javascript/MetadataSetField.js');
+		Requirements::css(FRAMEWORK_DIR . '/thirdparty/jquery-ui-themes/smoothness/jquery.ui.css');
 		Requirements::css('metadata/css/MetadataSetField.css');
 
 		return $this->renderWith('MetadataSetField');
 	}
 
 	/**
-	 * @return DataObjectSet
+	 * @return ArrayList
 	 */
 	public function Schemas() {
 		$record  = $this->form->getRecord();
@@ -99,14 +99,14 @@ class MetadataSetField extends FormField {
 			return;
 		}
 		$schemas = $record->getSchemas();
-		$result  = new DataObjectSet();
+		$result  = new ArrayList();
 
 		foreach ($schemas as $schema) {
-			$fields = new DataObjectSet();
+			$fields = new ArrayList();
 
 			foreach ($schema->getFormFields() as $field) {
-				$brPos  = strrpos($field->Name(), '[');
-				$scName = substr($field->Name(), $brPos + 1, -1);
+				$brPos  = strrpos($field->getName(), '[');
+				$scName = substr($field->getName(), $brPos + 1, -1);
 
 				$field->setValue($record->getRawMetadataValue($schema->Name, $scName));
 				$fields->push($field);
@@ -137,9 +137,9 @@ class MetadataSetField extends FormField {
 	}
 
 	protected function getKeywordsFor($record) {
-		$result = new DataObjectSet();
+		$result = new ArrayList();
 
-		foreach ($record->getAllFields() as $name => $value) {
+		foreach ($record->toMap() as $name => $value) {
 			$result->push(new ArrayData(array(
 				'Name'  => $name,
 				'Label' => $record->fieldLabel($name)
