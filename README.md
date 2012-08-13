@@ -4,8 +4,8 @@
 * Andrew Short (<andrew@silverstripe.com.au>)
 
 ## Requirements
-* SilverStripe 2.4.5+
-* The SilverStripe Orderable module.
+* SilverStripe 3+
+* SortableGridField - https://github.com/UndefinedOffset/SortableGridField
 
 ## Project Links
 * [GitHub Project Page](https://github.com/ajshort/silverstripe-metadata)
