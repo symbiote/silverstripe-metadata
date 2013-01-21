@@ -223,43 +223,47 @@ class MetadataExtension extends DataExtension {
 	 * @param  string $schema
 	 * @return string
 	 */
-	public function MetadataMetaTags($schema) {
+	public function MetadataMetaTags($schemaName = null) {
 		$result = '';
 		$cache  = SS_Cache::factory('MetadataExtension');
 		$key    = md5(implode('', array(
-			'MetadataMetaTags', $this->owner->class, $this->owner->ID, $this->owner->LastEdited
+			$schemaName, 'MetadataMetaTags', $this->owner->class, $this->owner->ID, $this->owner->LastEdited
 		)));
 
 		if ($cached = $cache->load($key)) {
 			return $cached;
 		}
 
-		if (!$schema = $this->getSchemas()->find('Name', $schema)) {
-			return;
-		}
-
-		foreach ($schema->Fields() as $field) {
-			$value = $this->Metadata($schema, $field);
-
-			if (!$value || ($value instanceof DBField && !$value->hasValue())) {
-				continue;
+		foreach ($this->getSchemas() as $schema) {
+			if ($schemaName) {
+				if (!$schema->Name == $schemaName) {
+					continue;
+				}
 			}
+			
+			foreach ($schema->Fields() as $field) {
+				$value = $this->Metadata($schema, $field);
 
-			if (is_object($value)) {
-				$value = $value instanceof DBField ? $value->Nice() : $value->getTitle();
+				if (!$value || ($value instanceof DBField && !$value->hasValue())) {
+					continue;
+				}
+
+				if (is_object($value)) {
+					$value = $value instanceof DBField ? $value->Nice() : $value->getTitle();
+				}
+
+				$result .= sprintf(
+					"<meta name=\"%s\" content=\"%s\" />\n",
+					Convert::raw2att($field->Name),
+					Convert::raw2att($value)
+				);
 			}
-
-			$result .= sprintf(
-				"<meta name=\"%s\" content=\"%s\" />\n",
-				Convert::raw2att($field->Name),
-				Convert::raw2att($value)
-			);
 		}
-
+		
 		$cache->save($result, $key);
 		return $result;
 	}
-
+	
 	public function updateCMSFields(FieldList $fields) {
 		
 		if (!$allSchemas = DataObject::get('MetadataSchema')) {

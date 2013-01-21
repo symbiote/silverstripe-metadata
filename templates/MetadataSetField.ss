@@ -2,7 +2,7 @@
 	<% if Schemas %>
 		<div id="$ID" class="ss-metdatasetfield">
 			<% control Schemas %>
-				<h3><a href="#">$Title</a></h3>
+				<h3><a href="$Link">$Title</a></h3>
 				<div>
 					<% if Description %>
 						<p class="ss-metadatasetfield-description">$Description</p>
