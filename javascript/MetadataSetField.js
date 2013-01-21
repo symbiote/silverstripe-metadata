@@ -4,15 +4,16 @@
 		
 		$("#Form_EditForm .ss-metdatasetfield").entwine({
 			onmatch: function() {
-				this.accordion({
-					collapsible: true,
-					active: false
-				});
+//				This is commented out for now as we don't really need the accordion control 
+//				this.accordion({
+//					collapsible: true,
+//					active: false
+//				});
 
 				this._super();
 			},
 			onremove: function() {
-				this.accordion('destroy');
+//				this.accordion('destroy');
 			},
 
 			getTabSet: function() {
@@ -21,7 +22,7 @@
 
 			fromTabSet: {
 				ontabsshow: function() {
-					this.accordion("resize");
+					// this.accordion("resize");
 				}
 			}
 
