@@ -113,6 +113,7 @@ class MetadataSetField extends FormField {
 			}
 
 			$result->push(new ArrayData(array(
+				'Link'		  => Controller::join_links('admin/metadata/MetadataSchema/EditForm/field/MetadataSchema/item', $schema->ID, 'edit'),
 				'Title'       => $schema->Title,
 				'Description' => $schema->Description,
 				'Fields'      => $fields
