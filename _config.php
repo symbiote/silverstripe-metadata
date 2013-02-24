@@ -8,8 +8,8 @@
 //
 // Object::add_extension('<class>', 'MetadataExtension');
 
-if (!class_exists('GridFieldSortableRows')) {
-	throw new Exception('The Metadata module required the SortableGridField module.');
+if (!class_exists('GridFieldOrderableRows')) {
+	throw new Exception('The metadata module requires the Grid Field Extensions module (https://github.com/ajshort/silverstripe-gridfieldextensions).');
 }
 
 define('METADATA_DIR', 'metadata');

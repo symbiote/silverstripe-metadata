@@ -80,7 +80,7 @@ class MetadataSelectField extends MetadataField {
 			new GridFieldEditButton(),
 			new GridFieldDeleteAction(),
 			new GridFieldDetailForm(),
-			new GridFieldSortableRows('Sort'),
+			new GridFieldOrderableRows('Sort'),
 			new MetaDataFieldAddForm
 		);
 		$gridField = new GridField('Options', 'Options', $this->Options(), $gridFieldConfig);

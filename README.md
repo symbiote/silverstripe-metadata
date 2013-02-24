@@ -5,7 +5,7 @@
 
 ## Requirements
 * SilverStripe 3+
-* The SilverStripe Orderable module.
+* The SilverStripe Grid Field Extensions module.
 
 ## Getting started
 

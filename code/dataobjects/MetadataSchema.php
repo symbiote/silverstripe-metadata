@@ -69,7 +69,7 @@ class MetadataSchema extends DataObject {
 				new GridFieldEditButton(),
 				new GridFieldDeleteAction(),
 				new GridFieldDetailForm(),
-				new GridFieldSortableRows('Sort'),
+				new GridFieldOrderableRows('Sort'),
 				new MetaDataFieldAddForm
 			);
 
