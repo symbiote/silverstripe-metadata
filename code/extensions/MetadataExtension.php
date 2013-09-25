@@ -252,9 +252,27 @@ class MetadataExtension extends DataExtension {
 					$value = $value instanceof DBField ? $value->Nice() : $value->getTitle();
 				}
 
+				$extraAttributes = '';
+				$extras = $field->extend('getExtraTagAttributes');
+				$usedAttr = array();
+				if ($extras && is_array($extras)){
+					foreach ($extras as $extra){
+						if ($extra && is_array($extra)){
+							foreach ($extra as $k => $v){
+								if (!in_array($k, $usedAttr)){
+									$usedAttr[] = $k;
+									$extraAttributes .= sprintf(' %s="%s"', $k, $v);
+								}
+							}
+							
+						}
+					}
+				}
+
 				$result .= sprintf(
-					"<meta name=\"%s\" content=\"%s\" />\n",
+					"<meta name=\"%s\"%s content=\"%s\" />\n",
 					Convert::raw2att($field->Name),
+					$extraAttributes,
 					Convert::raw2att($value)
 				);
 			}
