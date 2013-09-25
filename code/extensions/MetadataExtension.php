@@ -253,10 +253,19 @@ class MetadataExtension extends DataExtension {
 				}
 
 				$extraAttributes = '';
-				$extras = $field->hasMethod('getExtraTagAttributes') ? $field->getExtraTagAttributes() : '';
+				$extras = $field->extend('getExtraTagAttributes');
+				$usedAttr = array();
 				if ($extras && is_array($extras)){
-					foreach ($extras as $name => $val){
-						$extraAttributes .= sprintf(' %s="%s"', $name, $val);
+					foreach ($extras as $extra){
+						if ($extra && is_array($extra)){
+							foreach ($extra as $k => $v){
+								if (!in_array($k, $usedAttr)){
+									$usedAttr[] = $k;
+									$extraAttributes .= sprintf(' %s="%s"', $k, $v);
+								}
+							}
+							
+						}
 					}
 				}
 
