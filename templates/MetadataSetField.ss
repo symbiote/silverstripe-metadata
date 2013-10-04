@@ -1,17 +1,17 @@
 <div id="$Name" class="$CSSClasses $Type ss-metadatasetfield field">
 	<% if Schemas %>
 		<div id="$ID" class="ss-metdatasetfield">
-			<% control Schemas %>
+			<% loop Schemas %>
 				<h3><a href="$Link">$Title</a></h3>
 				<div>
 					<% if Description %>
 						<p class="ss-metadatasetfield-description">$Description</p>
 					<% end_if %>
-					<% control Fields %>
+					<% loop Fields %>
 						$FieldHolder
-					<% end_control %>
+					<% end_loop %>
 				</div>
-			<% end_control %>
+			<% end_loop %>
 		</div>
 		
 		<div class="ss-metadatasetfield-keywordreplacements">
@@ -24,9 +24,9 @@
 			
 			<h4>Record Keywords</h4>
 			<ul>
-				<% control Keywords %>
+				<% loop Keywords %>
 					<li><strong>$$Name</strong> - $Label</li>
-				<% end_control %>
+				<% end_loop %>
 			</ul>
 			
 			<h4>Member Keywords</h4>
@@ -35,9 +35,9 @@
 				replaced with the corresponding value when the record is saved:
 			</p>
 			<ul>
-				<% control MemberKeywords %>
+				<% loop MemberKeywords %>
 					<li><strong>&#36;Member.$Name</strong> - $Label</li>
-				<% end_control %>
+				<% end_loop %>
 			</ul>
 		</div>
 	<% else %>
