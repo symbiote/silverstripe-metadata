@@ -7,6 +7,8 @@
 * SilverStripe 3+
 * The SilverStripe Orderable module.
 
+Note: This is a 3.0 compatible line - please use the master branch for 3.1 compatibility
+
 ## Getting started
 
 * Add the extension to your data class, eg `Object::add_extension('Page', 'MetadataExtension');`
