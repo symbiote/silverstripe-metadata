@@ -6,7 +6,8 @@ class MetadataSelectFieldOption extends DataObject {
 
 	public static $db = array(
 		'Key'   => 'Varchar(100)',
-		'Value' => 'Varchar(255)'
+		'Value' => 'Varchar(255)',
+		'Sort'	=> 'Int',
 	);
 
 	public static $has_one = array(

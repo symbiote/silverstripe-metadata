@@ -27,17 +27,24 @@ class MetadataSelectField extends MetadataField {
 			case 'dropdown':
 				switch ($this->EmptyMode) {
 					case 'none':  $emptyText = false; break;
-					case 'blank': $emptyText = true; break;
+					case 'blank': $emptyText = ' '; break;
 					case 'text':  $emptyText = $this->EmptyText; break;
 				}
 
-				return new DropdownField(
+				$opts = $this->Options()->map('Key', 'Value')->toArray();
+				
+				$df = new DropdownField(
 					$this->getFormFieldName(),
 					$this->Title,
-					$this->Options()->map('Key', 'Value'),
+					$opts,
 					$this->Default,
-					null,
-					$emptyText);
+					null);
+				
+				if (is_string($emptyText)) {
+					$df->setEmptyString($emptyText);
+				}
+				
+				return $df;
 
 			case 'optionset':
 				return new OptionsetField(

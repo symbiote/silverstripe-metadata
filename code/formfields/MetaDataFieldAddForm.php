@@ -49,6 +49,11 @@ class MetaDataFieldAddForm implements GridField_URLHandler {
 		'' => 'add',
 	);
 
+	private static $allowed_actions = array(
+		'add',
+		'AddForm',
+	);
+	
     public function __construct($gridField, $component, $record, $popupController, $popupFormName) {
         parent::__construct($gridField, $component, $record, $popupController, $popupFormName);
     }
@@ -84,8 +89,10 @@ class MetaDataFieldAddForm implements GridField_URLHandler {
 	public function AddForm() {
 		$fields = new FieldList(
 			new LiteralField('SelectFieldType', '<p><strong>Please select a field type to add:</strong></p>'),
-			new DropdownField('ClassName', '', $this->getFieldTypes(), null, null, true)
+			$df = new DropdownField('ClassName', '', $this->getFieldTypes(), null, null)
 		);
+		
+		$df->setHasEmptyDefault(true);
 
 		if($schemaID = (int)$this->request->param('ID')) {
 			$fields->push(new HiddenField('SchemaID', '', $schemaID)); 

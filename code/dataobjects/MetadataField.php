@@ -13,7 +13,7 @@ class MetadataField extends DataObject {
 		'Required' 	=> 'Boolean',
 		'Cascade'  	=> 'Boolean',
 		'Default'  	=> 'Text',
-		'Sort'  	=> 'Int'
+		'Sort'  	=> 'Int',
 	);
 
 	public static $indexes = array(
