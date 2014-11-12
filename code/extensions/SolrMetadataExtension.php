@@ -4,7 +4,7 @@
  * @author <marcus@silverstripe.com.au>
  * @license BSD License http://www.silverstripe.org/bsd-license
  */
-class SearchableMetadataExtension extends DataExtension {
+class SolrMetadataExtension extends DataExtension {
 	
 	public function onBeforeWrite() {
 		parent::onBeforeWrite();
