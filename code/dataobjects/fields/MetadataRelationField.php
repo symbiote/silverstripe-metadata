@@ -23,11 +23,11 @@ class MetadataRelationField extends MetadataField {
 		$emptyString = count($map) ? "Select $class" : "No $class objects found";
  
 
-		return new DropdownField(
+		return DropdownField::create(
 			$this->getFormFieldName(),
 			$this->Title,
 			$map,
-			null, null, $emptyString);
+			null, null)->setEmptyString($emptyString);
 	}
 
 	/**
@@ -55,9 +55,7 @@ class MetadataRelationField extends MetadataField {
 			$subjects[$class] = singleton($class)->singular_name() . " ($class)";
 		}
 
-		$subject = new DropdownField(
-			'SubjectClass', 'Relationship subject class', $subjects, null, null, true
-		);
+		$subject = DropdownField::create('SubjectClass', 'Relationship subject class', $subjects, null, null)->setHasEmptyDefault(true);
 		$fields->addFieldToTab('Root.Main', $subject, 'Required');
 
 		return $fields;
