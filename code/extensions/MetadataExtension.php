@@ -63,6 +63,26 @@ class MetadataExtension extends DataExtension {
 
 		return $schemas ? new ArrayList($schemas->toArray()) : new ArrayList();
 	}
+	
+	/**
+	 * Alternative ancestor lookup that doesn't use getParent() which fails for Image/File classes
+	 * to retrieve the true hierarchy. 
+	 */
+	protected function altAncestors() {
+		if ($this->owner instanceof File) {
+			$ancestors = new ArrayList();
+			$object    = $this->owner->Parent();
+				
+			while($object && $object->exists()) {
+				$ancestors->push($object);
+				$object = $object->Parent();
+			}
+
+			return $ancestors;
+		}
+		
+		return $this->owner->getAncestors();
+	}
 
 	/**
 	 * If this is attached to an object with the hierarchy extension, it returns
@@ -79,18 +99,19 @@ class MetadataExtension extends DataExtension {
 		}
 
 		$ids     = array();
-		$parents = $this->owner->getAncestors();
+		$parents = $this->altAncestors();
 
 		foreach ($parents as $parent) {
 			$ids[] = $parent->ID;
 		}
 		
 		if (count($ids)) {
+			$baseClass = ClassInfo::baseDataClass($this->owner->class);
 			$filter = sprintf(
 				'"MetadataSchema"."ID" = "MetadataSchemaLink"."SchemaID"'
 				. ' AND "MetadataSchemaLink"."ParentClass" = \'%s\''
 				. ' AND "MetadataSchemaLink"."ParentID" IN (%s)',
-				ClassInfo::baseDataClass($this->owner->class),
+				$baseClass,
 				implode(', ', $ids)
 			);
 
@@ -282,7 +303,18 @@ class MetadataExtension extends DataExtension {
 		return $result;
 	}
 	
+	public function updateSiteCMSFields(FieldList $fields) {
+		return $this->updateCMSFields($fields);
+	}
+	
 	public function updateCMSFields(FieldList $fields) {
+		
+		if ($this->owner->ID <= 0) {
+			return;
+		}
+		
+		$p = $this->owner->Parent();
+		$d = $this->owner->getParent();
 		
 		if (!$allSchemas = DataObject::get('MetadataSchema')) {
 			return;
@@ -290,16 +322,13 @@ class MetadataExtension extends DataExtension {
 		
 		$tabName = 'Root.Metadata';
 		$rootTab = $fields->fieldByName('Root');
-		if (!$rootTab) {
-			$tabName = 'BottomRoot.Metadata';
-		}
-
-		$fields->addFieldsToTab($tabName, array(
+		
+		$newFields = array(
 			new HeaderField('MetadataInfoHeader', 'Metadata Information'),
 			new MetadataSetField($this->owner, 'MetadataRaw'),
 			new HeaderField('MetadataSchemasHeader', 'Metadata Schemas'),
 			$linkedSchemas = new CheckboxSetField('MetadataSchemas', '', $allSchemas)
-		));
+		);
 
 		$inherited = $this->getInheritedSchemas()->map('ID', 'ID');
 		$linkedSchemas->setValue($this->getAttachedSchemas()->map('ID', 'ID'));
@@ -312,11 +341,19 @@ class MetadataExtension extends DataExtension {
 		}
 
 		if ($this->owner->hasExtension('Hierarchy')) {
-			$fields->addFieldToTab($tabName, new LiteralField(
+			$newFields[] = new LiteralField(
 				'SchemaAppliedToChildrenNote',
 				'<p>Any metadata schemas selected will also be applied to this'
 				. " item's children.</p>"
-			));
+			);
+		}
+		
+		if (!$rootTab) {
+			foreach ($newFields as $f) {
+				$fields->push($f);
+			}
+		} else {
+			$fields->addFieldsToTab($tabName, $newFields);
 		}
 	}
 
