@@ -1,7 +1,7 @@
 # SilverStripe Metadata Module
 
 ## Maintainer Contacts
-* Andrew Short (<andrew@silverstripe.com.au>)
+* Marcus Nyeholt (<marcus@silverstripe.com.au>)
 
 ## Requirements
 * SilverStripe 3+
