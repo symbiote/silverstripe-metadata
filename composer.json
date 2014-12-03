@@ -1,6 +1,6 @@
 {
 	"name": "silverstripe-australia/metadata",
-	"description": "Allows the ability to annotate objects with metadata according to a CMS defined schema.",
+	"description": "Allows the ability to annotate objects with metadata, according to a CMS defined schema.",
 	"type": "silverstripe-module",
 	"homepage": "https://github.com/silverstripe-australia/silverstripe-metadata",
 	"license": "BSD-3-Clause",
