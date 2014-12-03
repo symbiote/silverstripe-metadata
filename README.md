@@ -1,9 +1,11 @@
 # SilverStripe Metadata Module
 
 ## Maintainer Contacts
+
 * Marcus Nyeholt (<marcus@silverstripe.com.au>)
 
 ## Requirements
+
 * SilverStripe 3+
 * The SilverStripe Orderable module.
 
