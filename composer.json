@@ -11,7 +11,7 @@
 	"require": {
 		"silverstripe/framework": "3.1.*",
 		"silverstripe/cms": "3.1.*",
-		"undefinedoffset/sortablegridfield": "dev-master"
+		"undefinedoffset/sortablegridfield": "~0.4"
 	},
 	"extra": {
 		"installer-name": "metadata"
