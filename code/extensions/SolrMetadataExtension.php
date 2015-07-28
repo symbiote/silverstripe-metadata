@@ -10,21 +10,17 @@ class SolrMetadataExtension extends DataExtension {
 		parent::onBeforeWrite();
 	}
 	
-	public function getSolrSearchableFields() {
-		$toIndex = $this->owner->searchableFields();
-		
+	public function updateSolrSearchableFields(&$fields) {
 		if ($this->owner->hasExtension('MetadataExtension')) {
 			$all = $this->owner->getAllMetadata();
 			foreach ($all as $schema => $fields) {
 				foreach ($fields as $key => $val) {
 					if (strlen($val)) {
-						$toIndex[$key] = true;
+						$fields[$key] = true;
 					}
 				}
 			}
 		}
-
-		return $toIndex;
 	}
 	
 	public function additionalSolrValues() {
