@@ -4,7 +4,7 @@
  */
 class MetadataHtmlField extends MetadataTextField {
 
-	public static $defaults = array(
+	private static $defaults = array(
 		'Rows' => 10
 	);
 

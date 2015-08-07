@@ -6,35 +6,35 @@
  */
 class MetadataSchema extends DataObject {
 
-	public static $db = array(
+	private static $db = array(
 		'Name'        => 'Varchar(100)',
 		'Title'       => 'Varchar(255)',
 		'Description' => 'Text'
 	);
 
-	public static $indexes = array(
+	private static $indexes = array(
 		'NameUnique' => array('type' => 'unique', 'value' => 'Name')
 	);
 
-	public static $has_many = array(
+	private static $has_many = array(
 		'Fields' => 'MetadataField',
 		'Links'  => 'MetadataSchemaLink'
 	);
 
-	public static $default_sort = '"Title"';
+	private static $default_sort = '"Title"';
 
-	public static $summary_fields = array(
+	private static $summary_fields = array(
 		'Name',
 		'Title',
 		'DescriptionSummary'
 	);
 
-	public static $searchable_fields = array(
+	private static $searchable_fields = array(
 		'Name',
 		'Title',
 		'Description'
 	);
-
+	
 	/**
 	 * @return FieldList
 	 */

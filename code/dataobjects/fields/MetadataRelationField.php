@@ -4,7 +4,7 @@
  */
 class MetadataRelationField extends MetadataField {
 
-	public static $db = array(
+	private static $db = array(
 		'SubjectClass' => 'Varchar(100)'
 	);
 

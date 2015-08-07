@@ -4,11 +4,11 @@
  */
 class MetadataTextField extends MetadataField {
 
-	public static $db = array(
+	private static $db = array(
 		'Rows' => 'Int',
 	);
 
-	public static $defaults = array(
+	private static $defaults = array(
 		'Rows' => 1
 	);
 

@@ -7,7 +7,7 @@
  */
 class MetadataField extends DataObject {
 
-	public static $db = array(
+	private static $db = array(
 		'Name'     	=> 'Varchar(100)',
 		'Title'    	=> 'Varchar(255)',
 		'Required' 	=> 'Boolean',
@@ -16,21 +16,21 @@ class MetadataField extends DataObject {
 		'Sort'  	=> 'Int',
 	);
 
-	public static $indexes = array(
+	private static $indexes = array(
 		'Name_SchemaID' => array('type' => 'unique', 'value' => 'Name,SchemaID')
 	);
 
-	public static $has_one = array(
+	private static $has_one = array(
 		'Schema' => 'MetadataSchema'
 	);
 
-	public static $field_labels = array(
+	private static $field_labels = array(
 		'Name'    => 'Field name',
 		'Title'   => 'Title (human readable name)',
 		'Cascade' => 'Cascade to child objects without a value set',
 	);
 
-	public static $summary_fields = array(
+	private static $summary_fields = array(
 		'Name',
 		'Title',
 		'Type'
