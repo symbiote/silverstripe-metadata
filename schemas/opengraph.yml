@@ -1,0 +1,10 @@
+MetadataSchema:
+  OpenGraph:
+    Title: "Facebook OpenGraph"
+    Name: "OpenGraph"
+MetadataTextField:
+  URL:
+    Title: URL
+    Name: "og:url"
+    Default: $AbsoluteLink
+    Schema: =>MetadataSchema.OpenGraph

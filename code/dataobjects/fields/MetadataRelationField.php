@@ -5,7 +5,8 @@
 class MetadataRelationField extends MetadataField {
 
 	private static $db = array(
-		'SubjectClass' => 'Varchar(100)'
+		'SubjectClass'		=> 'Varchar(100)',
+		'SelectAny'			=> 'Boolean',
 	);
 
 	public function getFieldTitle() {
@@ -15,13 +16,43 @@ class MetadataRelationField extends MetadataField {
 	/**
 	 * @return DropdownField
 	 */
-	public function getFormField() {
+	public function getFormField($record = null) {
 		$class = $this->SubjectClass;
 		$title = singleton($class)->hasField('Title') ? 'Title' : 'Name';
-		$objects = DataObject::get($class);
+		
+		$objects = null;
+		
+		if (!$this->SelectAny && $record) {
+			$objects = ArrayList::create();
+			if ($hasOnes = $record->has_one()) {
+				foreach($hasOnes as $name => $type) {
+					if (is_a($type, $class, true)) {
+						$item = $record->$name();
+						if ($item->ID && $item->canView()) {
+							$objects->push($item);
+						}
+					}
+				}
+			}
+			if ($manies = $record->many_many()) {
+				foreach($manies as $name => $type) {
+					if (is_a($type, $class, true)) {
+						foreach ($record->$name() as $item) {
+							if ($item->ID && $item->canView()) {
+								$objects->push($item);
+							}
+						}
+					}
+					
+				}
+			}
+		}
+		if ($this->SelectAny || !$objects || $objects->count() === 0) {
+			$objects = DataObject::get($class);
+		}
+
 		$map = $objects ? $objects->map('ID', $title) : array();
 		$emptyString = count($map) ? "Select $class" : "No $class objects found";
- 
 
 		return DropdownField::create(
 			$this->getFormFieldName(),
@@ -57,6 +88,8 @@ class MetadataRelationField extends MetadataField {
 
 		$subject = DropdownField::create('SubjectClass', 'Relationship subject class', $subjects, null, null)->setHasEmptyDefault(true);
 		$fields->addFieldToTab('Root.Main', $subject, 'Required');
+		
+		$fields->dataFieldByName('SelectAny')->setRightTitle('Select any item of this type');
 
 		return $fields;
 	}

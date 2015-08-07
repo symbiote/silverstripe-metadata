@@ -35,14 +35,19 @@ class MetadataSchema extends DataObject {
 		'Description'
 	);
 	
+	private static $default_schemas = array(
+		
+	);
+
+	
 	/**
 	 * @return FieldList
 	 */
-	public function getFormFields() {
+	public function getFormFields($record = null) {
 		$fields = new FieldList();
 
 		foreach ($this->Fields()->sort('Sort') as $field) {
-			$fields->push($field->getFormField());
+			$fields->push($field->getFormField($record));
 		}
 
 		return $fields;
@@ -129,6 +134,69 @@ class MetadataSchema extends DataObject {
 	 */
 	public function DescriptionSummary() {
 		return $this->obj('Description')->LimitCharacters(150);
+	}
+	
+	public function requireDefaultRecords() {
+		parent::requireDefaultRecords();
+		
+		// get schemas that need creating
+		$schemas = $this->config()->get('default_schemas');
+		
+		$factory = new FixtureFactory();
+		
+		require_once 'spyc/spyc.php';
+		
+		foreach ($schemas as $file) {
+			if (file_exists(Director::baseFolder().'/'.$file)) {
+				$parser = new Spyc();
+				$fixtureContent = $parser->loadFile(Director::baseFolder().'/'.$file);
+				
+				if (isset($fixtureContent['MetadataSchema'])) {
+					$toBuild = array();
+					// check if it exists or not, if so don't re-create it
+					foreach ($fixtureContent['MetadataSchema'] as $id => $desc) {
+						$name = isset($desc['Name']) ? $desc['Name'] : null;
+						if (!$name) {
+							throw new Exception("Cannot create metadata schema without a name");
+						}
+						$existing = MetadataSchema::get()->filter('Name', $name)->first();
+						if ($existing) {
+							$factory->setId('MetadataSchema', $id, $existing->ID);
+						} else {
+							$factory->createObject('MetadataSchema', $id, $desc);
+							DB::alteration_message('Metadata schema ' . $id . ' created', 'created');
+						}
+					}
+					// don't need this now
+					unset($fixtureContent['MetadataSchema']);
+					
+					// go through and unset any existing fields
+					$toBuild = array();
+
+					foreach($fixtureContent as $class => $items) {
+						foreach($items as $identifier => $data) {
+							if (!isset($data['Name'])) {
+								throw new Exception("Metadata fields must have a name");
+							}
+							if (!isset($data['Title'])) {
+								$data['Title'] = $data['Name'];
+							}
+							
+							$existing = MetadataField::get()->filter('Name', $data['Name'])->first();
+							if ($existing) {
+								$factory->setId($class, $identifier, $existing->ID);
+							} else {
+								$factory->createObject($class, $identifier, $data);
+								DB::alteration_message('Metadata field ' . $data['Name'] . ' created', 'created');
+							}
+						}
+					}
+				}
+				
+				
+			}
+	
+		}
 	}
 
 }
