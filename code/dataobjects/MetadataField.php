@@ -90,7 +90,29 @@ class MetadataField extends DataObject {
 	 * @return mixed
 	 */
 	public function process($value, $record) {
-		return $value;
+		$this->processedRecord = $record;
+
+		return preg_replace_callback(
+			'/\$([A-Za-z_][A-Za-z0-9_]*)/',
+			array($this, 'replaceKeyword'),
+			$value
+		);
+	}
+	
+	public function replaceKeyword($matches) {
+		$record = $this->processedRecord;
+		$field  = $matches[1];
+
+		if ($record->hasField($field)) {
+			return $record->$field;
+		} 
+		
+		$allowedMethods = array('Link', 'AbsoluteLink');
+		if (in_array($field, $allowedMethods)) {
+			return $record->$field();
+		}
+
+		return '$' . $field;
 	}
 
 	/**

@@ -7,6 +7,7 @@ class MetadataRelationField extends MetadataField {
 	private static $db = array(
 		'SubjectClass'		=> 'Varchar(100)',
 		'SelectAny'			=> 'Boolean',
+		'ReturnValue'		=> "Enum('Link,Title,Default','Default')"
 	);
 
 	public function getFieldTitle() {
@@ -66,7 +67,21 @@ class MetadataRelationField extends MetadataField {
 	 */
 	public function process($value, $record) {
 		if (ctype_digit($value)) {
-			return DataObject::get_by_id($this->SubjectClass, $value);
+			$object = DataObject::get_by_id($this->SubjectClass, $value);
+			
+			switch ($this->ReturnValue) {
+				case 'Link': {
+					return $object instanceof File ? $object->getAbsoluteURL() : (method_exists($object, 'AbsoluteLink') ? $object->AbsoluteLink() : '');
+				}
+				case 'Title': {
+					return $object->getTitle();
+					break;
+				}
+				case 'Default': {
+					return $object;
+				}
+			}
+			return $object;
 		}
 	}
 
