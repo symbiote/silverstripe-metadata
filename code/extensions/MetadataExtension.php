@@ -16,7 +16,7 @@ class MetadataExtension extends DataExtension {
 	protected $schemas;
 
 	
-	static $db =  array(
+	private static $db =  array(
 		'MetadataRaw' => 'Text'
 	);
 

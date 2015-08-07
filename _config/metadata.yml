@@ -1,0 +1,5 @@
+MetadataSchema:
+  default_schemas:
+    - metadata/schemas/aglsmetadata.yml
+    - metadata/schemas/opengraph.yml
+    - metadata/schemas/twittercard.yml

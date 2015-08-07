@@ -4,11 +4,11 @@
  */
 class MetadataTextField extends MetadataField {
 
-	public static $db = array(
+	private static $db = array(
 		'Rows' => 'Int',
 	);
 
-	public static $defaults = array(
+	private static $defaults = array(
 		'Rows' => 1
 	);
 
@@ -59,19 +59,6 @@ class MetadataTextField extends MetadataField {
 			$value);
 	}
 
-	/**
-	 * @return string
-	 */
-	public function process($value, $record) {
-		$this->processedRecord = $record;
-
-		return preg_replace_callback(
-			'/\$([A-Za-z_][A-Za-z0-9_]*)/',
-			array($this, 'replaceKeyword'),
-			$value
-		);
-	}
-
 	public function replaceMemberKeyword($matches) {
 		$record = Member::currentUser();
 		$field  = $matches[1];
@@ -80,17 +67,6 @@ class MetadataTextField extends MetadataField {
 			return $record->$field;
 		} else {
 			return '$Member.' . $field;
-		}
-	}
-
-	public function replaceKeyword($matches) {
-		$record = $this->processedRecord;
-		$field  = $matches[1];
-
-		if ($record->hasField($field)) {
-			return $record->$field;
-		} else {
-			return '$' . $field;
 		}
 	}
 

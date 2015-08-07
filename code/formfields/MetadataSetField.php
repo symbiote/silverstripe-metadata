@@ -104,7 +104,7 @@ class MetadataSetField extends FormField {
 		foreach ($schemas as $schema) {
 			$fields = new ArrayList();
 
-			foreach ($schema->getFormFields() as $field) {
+			foreach ($schema->getFormFields($record) as $field) {
 				$brPos  = strrpos($field->getName(), '[');
 				$scName = substr($field->getName(), $brPos + 1, -1);
 

@@ -4,17 +4,17 @@
  */
 class MetadataSelectField extends MetadataField {
 
-	public static $db = array(
+	private static $db = array(
 		'Type'      => 'Enum("dropdown, optionset, checkboxset", "dropdown")',
 		'EmptyMode' => 'Enum("none, blank, text")',
 		'EmptyText' => 'Varchar(100)'
 	);
 
-	public static $has_many = array(
+	private static $has_many = array(
 		'Options' => 'MetadataSelectFieldOption'
 	);
 
-	public static $defaults = array(
+	private static $defaults = array(
 		'EmptyMode' => 'blank'
 	);
 

@@ -7,7 +7,7 @@
  */
 class MetadataField extends DataObject {
 
-	public static $db = array(
+	private static $db = array(
 		'Name'     	=> 'Varchar(100)',
 		'Title'    	=> 'Varchar(255)',
 		'Required' 	=> 'Boolean',
@@ -16,21 +16,21 @@ class MetadataField extends DataObject {
 		'Sort'  	=> 'Int',
 	);
 
-	public static $indexes = array(
+	private static $indexes = array(
 		'Name_SchemaID' => array('type' => 'unique', 'value' => 'Name,SchemaID')
 	);
 
-	public static $has_one = array(
+	private static $has_one = array(
 		'Schema' => 'MetadataSchema'
 	);
 
-	public static $field_labels = array(
+	private static $field_labels = array(
 		'Name'    => 'Field name',
 		'Title'   => 'Title (human readable name)',
 		'Cascade' => 'Cascade to child objects without a value set',
 	);
 
-	public static $summary_fields = array(
+	private static $summary_fields = array(
 		'Name',
 		'Title',
 		'Type'
@@ -90,7 +90,29 @@ class MetadataField extends DataObject {
 	 * @return mixed
 	 */
 	public function process($value, $record) {
-		return $value;
+		$this->processedRecord = $record;
+
+		return preg_replace_callback(
+			'/\$([A-Za-z_][A-Za-z0-9_]*)/',
+			array($this, 'replaceKeyword'),
+			$value
+		);
+	}
+	
+	public function replaceKeyword($matches) {
+		$record = $this->processedRecord;
+		$field  = $matches[1];
+
+		if ($record->hasField($field)) {
+			return $record->$field;
+		} 
+		
+		$allowedMethods = array('Link', 'AbsoluteLink');
+		if (in_array($field, $allowedMethods)) {
+			return $record->$field();
+		}
+
+		return '$' . $field;
 	}
 
 	/**
@@ -135,10 +157,10 @@ class MetadataField extends DataObject {
 	public function validate() {
 		$result = parent::validate();
 
-		if (preg_match('/[^.a-zA-Z0-9_]+/', $this->Name)) {
+		if (preg_match('/[^.a-zA-Z0-9:_]+/', $this->Name)) {
 			$result->error(
 				'The field name can only contain alphanumeric characters,'
-				. ' underscores and periods.'
+				. ' colons, underscores and periods.'
 			);
 		}
 
