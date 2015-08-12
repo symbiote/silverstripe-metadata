@@ -6,43 +6,48 @@
  */
 class MetadataSchema extends DataObject {
 
-	public static $db = array(
+	private static $db = array(
 		'Name'        => 'Varchar(100)',
 		'Title'       => 'Varchar(255)',
 		'Description' => 'Text'
 	);
 
-	public static $indexes = array(
+	private static $indexes = array(
 		'NameUnique' => array('type' => 'unique', 'value' => 'Name')
 	);
 
-	public static $has_many = array(
+	private static $has_many = array(
 		'Fields' => 'MetadataField',
 		'Links'  => 'MetadataSchemaLink'
 	);
 
-	public static $default_sort = '"Title"';
+	private static $default_sort = '"Title"';
 
-	public static $summary_fields = array(
+	private static $summary_fields = array(
 		'Name',
 		'Title',
 		'DescriptionSummary'
 	);
 
-	public static $searchable_fields = array(
+	private static $searchable_fields = array(
 		'Name',
 		'Title',
 		'Description'
 	);
+	
+	private static $default_schemas = array(
+		
+	);
 
+	
 	/**
 	 * @return FieldList
 	 */
-	public function getFormFields() {
+	public function getFormFields($record = null) {
 		$fields = new FieldList();
 
 		foreach ($this->Fields()->sort('Sort') as $field) {
-			$fields->push($field->getFormField());
+			$fields->push($field->getFormField($record));
 		}
 
 		return $fields;
@@ -129,6 +134,72 @@ class MetadataSchema extends DataObject {
 	 */
 	public function DescriptionSummary() {
 		return $this->obj('Description')->LimitCharacters(150);
+	}
+	
+	public function requireDefaultRecords() {
+		parent::requireDefaultRecords();
+		
+		// get schemas that need creating
+		$schemas = $this->config()->get('default_schemas');
+		
+		
+		require_once 'spyc/spyc.php';
+		
+		foreach ($schemas as $file) {
+			if (file_exists(Director::baseFolder().'/'.$file)) {
+				$parser = new Spyc();
+
+				$factory = new FixtureFactory();
+
+				$fixtureContent = $parser->loadFile(Director::baseFolder().'/'.$file);
+				
+				if (isset($fixtureContent['MetadataSchema'])) {
+					$toBuild = array();
+					// check if it exists or not, if so don't re-create it
+					foreach ($fixtureContent['MetadataSchema'] as $id => $desc) {
+						$name = isset($desc['Name']) ? $desc['Name'] : null;
+						if (!$name) {
+							throw new Exception("Cannot create metadata schema without a name");
+						}
+						$existing = MetadataSchema::get()->filter('Name', $name)->first();
+						if ($existing) {
+							$factory->setId('MetadataSchema', $id, $existing->ID);
+						} else {
+							$factory->createObject('MetadataSchema', $id, $desc);
+							DB::alteration_message('Metadata schema ' . $id . ' created', 'created');
+						}
+					}
+					// don't need this now
+					unset($fixtureContent['MetadataSchema']);
+					
+					// go through and unset any existing fields
+					$toBuild = array();
+
+					foreach($fixtureContent as $class => $items) {
+						foreach($items as $identifier => $data) {
+							$nameField = isset($data['Name']) ? 'Name' : (isset($data['Key']) ? 'Key' : '');
+							if (!strlen($nameField)) {
+								throw new Exception("Metadata fields must have a Name or Key field defined");
+							}
+							if (!isset($data['Title'])) {
+								$data['Title'] = $data[$nameField];
+							}
+							
+							$existing = $class::get()->filter($nameField, $data[$nameField])->first();
+							if ($existing) {
+								$factory->setId($class, $identifier, $existing->ID);
+							} else {
+								$factory->createObject($class, $identifier, $data);
+								DB::alteration_message('Metadata field ' . $data[$nameField] . ' created', 'created');
+							}
+						}
+					}
+				}
+				
+				
+			}
+	
+		}
 	}
 
 }

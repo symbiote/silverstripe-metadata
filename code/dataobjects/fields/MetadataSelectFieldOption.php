@@ -4,17 +4,17 @@
  */
 class MetadataSelectFieldOption extends DataObject {
 
-	public static $db = array(
+	private static $db = array(
 		'Key'   => 'Varchar(100)',
 		'Value' => 'Varchar(255)',
 		'Sort'	=> 'Int',
 	);
 
-	public static $has_one = array(
+	private static $has_one = array(
 		'Parent' => 'MetadataSelectField'
 	);
 
-	public static $summary_fields = array(
+	private static $summary_fields = array(
 		'Key',
 		'Value'
 	);

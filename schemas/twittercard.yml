@@ -1,0 +1,118 @@
+MetadataSchema:
+  Twitter:
+    Title: "Twitter Card"
+    Name: "Twitter"
+  TwitterApp:
+    Title: Twitter App Extended Properties
+    Name: TwitterApp
+
+MetadataSelectField:
+  CardType:
+    Title: Type
+    Name: twitter:card
+    Default: summary
+    Schema: =>MetadataSchema.Twitter
+
+MetadataSelectFieldOption:
+  TwitterSummary:
+    Key: summary
+    Value: summary
+    Parent: =>MetadataSelectField.CardType
+  TwitterLargeImage:
+    Key: summary_large_image
+    Value: summary_large_image
+    Parent: =>MetadataSelectField.CardType
+  TwitterApp:
+    Key: app
+    Value: app
+    Parent: =>MetadataSelectField.CardType
+  TwitterPlayer:
+    Key: player
+    Value: player
+    Parent: =>MetadataSelectField.CardType
+
+MetadataTextField:
+  TwitterSite:
+    Title: Site
+    Name: twitter:site
+    Default: 
+    Cascade: 1
+    Schema: =>MetadataSchema.Twitter
+
+  TwitterCreator:
+    Title: Creator
+    Name: twitter:creator
+    Cascade: 1
+    Default: 
+    Schema: =>MetadataSchema.Twitter
+
+  TwitterTitle:
+    Title: Title
+    Name: twitter:title
+    Default: $Title
+    Schema: =>MetadataSchema.Twitter
+
+  TwitterDescription:
+    Title: Description
+    Name: twitter:description
+    Rows: 3
+    Schema: =>MetadataSchema.Twitter
+
+  TwitterAppCountry:
+    Title: App Country
+    Name: twitter:app:country
+    Schema: =>MetadataSchema.TwitterApp
+
+  TwitterAppNameIphone:
+    Title: App Name iPhone
+    Name: twitter:app:name:iphone
+    Schema: =>MetadataSchema.TwitterApp
+
+  TwitterAppIdIphone:
+    Title: App ID iPhone
+    Name: twitter:app:id:iphone
+    Schema: =>MetadataSchema.TwitterApp
+
+  TwitterAppUrlIphone:
+    Title: App ID iPhone
+    Name: twitter:app:url:iphone
+    Schema: =>MetadataSchema.TwitterApp
+
+  TwitterAppNameIpad:
+    Title: App Name iPad
+    Name: twitter:app:name:ipad
+    Schema: =>MetadataSchema.TwitterApp
+
+  TwitterAppIdIpad:
+    Title: App ID iPad
+    Name: twitter:app:id:ipad
+    Schema: =>MetadataSchema.TwitterApp
+
+  TwitterAppUrlIpad:
+    Title: App ID iPad
+    Name: twitter:app:url:ipad
+    Schema: =>MetadataSchema.TwitterApp
+
+  TwitterAppNameAndroid:
+    Title: App Name googleplay
+    Name: twitter:app:name:googleplay
+    Schema: =>MetadataSchema.TwitterApp
+
+  TwitterAppIdAndroid:
+    Title: App ID googleplay
+    Name: twitter:app:id:googleplay
+    Schema: =>MetadataSchema.TwitterApp
+
+  TwitterAppUrlAndroid:
+    Title: App ID googleplay
+    Name: twitter:app:url:googleplay
+    Schema: =>MetadataSchema.TwitterApp
+
+MetadataRelationField:
+  TwitterImage:
+    Title: Image
+    Name: twitter:image
+    Cascade: 1
+    SubjectClass: Image
+    ReturnValue: Link
+    Schema: =>MetadataSchema.Twitter

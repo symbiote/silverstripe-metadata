@@ -1,0 +1,80 @@
+MetadataSchema:
+  AGLS:
+    Title: "AGLS"
+    Name: "AGLS"
+MetadataTextField:
+  Title:
+    Title: "DC.Title"
+    Name: "DC.Title"
+    Default: "$Title"
+    Schema: =>MetadataSchema.AGLS
+  Creator:
+    Title: "DC.Creator"
+    Name: "DC.Creator"
+    Schema: =>MetadataSchema.AGLS
+  Contact:
+    Title: "DC.Contact"
+    Name: "DC.Contact"
+    Schema: =>MetadataSchema.AGLS
+  Subject:
+    Title: "DC.Subject"
+    Name: "DC.Subject"
+    Schema: =>MetadataSchema.AGLS
+  Description:
+    Title: "DC.Description"
+    Name: "DC.Description"
+    Default: "$MetaDescription"
+    Schema: =>MetadataSchema.AGLS
+  Topic:
+    Title: "DC.Topic"
+    Name: "DC.Topic"
+    Schema: =>MetadataSchema.AGLS
+  Audience:
+    Title: "DC.Audience"
+    Name: "DC.Audience"
+    Schema: =>MetadataSchema.AGLS
+  DateCreated:
+    Title: "DC.Date.Created"
+    Name: "DC.Date.Created"
+    Default: "$Created"
+    Schema: =>MetadataSchema.AGLS
+  DateModified:
+    Title: "DC.Date.Modified"
+    Name: "DC.Date.Modified"
+    Default: "$Modified"
+    Schema: =>MetadataSchema.AGLS
+  DatePublished:
+    Title: "DC.Date.Published"
+    Name: "DC.Date.Published"
+    Schema: =>MetadataSchema.AGLS
+  Publisher:
+    Title: "DC.Publisher"
+    Name: "DC.Publisher"
+    Schema: =>MetadataSchema.AGLS
+  Format:
+    Title: "DC.Format"
+    Name: "DC.Format"
+    Default: "HTML"
+    Schema: =>MetadataSchema.AGLS
+  DocumentType:
+    Title: "DC.Type.DocumentType"
+    Name: "DC.Type.DocumentType"
+    Default: "$MediaType"
+    Schema: =>MetadataSchema.AGLS
+  Rights:
+    Title: "DC.Rights"
+    Name: "DC.Rights"
+    Schema: =>MetadataSchema.AGLS
+  Identifier:
+    Title: "DC.Identifier"
+    Name: "DC.Identifier"
+    Schema: =>MetadataSchema.AGLS
+  Coverage:
+    Title: "DC.Coverage"
+    Name: "DC.Coverage"
+    Schema: =>MetadataSchema.AGLS
+  Language:
+    Title: "DC.Language"
+    Name: "DC.Language"
+    Default: "English"
+    Schema: =>MetadataSchema.AGLS

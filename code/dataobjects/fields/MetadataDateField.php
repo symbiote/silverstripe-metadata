@@ -4,7 +4,7 @@
  */
 class MetadataDateField extends MetadataField {
 
-	public static $db = array(
+	private static $db = array(
 		'Type'        => 'Enum("datetime, date, time", "datetime")',
 		'DefaultType' => 'Enum("specific, created", "specific")'
 	);

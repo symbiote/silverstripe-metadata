@@ -6,12 +6,12 @@
  */
 class MetadataSchemaLink extends DataObject {
 
-	public static $db = array(
+	private static $db = array(
 		'ParentClass' => 'Varchar(100)',
 		'ParentID'    => 'Int'
 	);
 
-	public static $has_one = array(
+	private static $has_one = array(
 		'Schema' => 'MetadataSchema'
 	);
 

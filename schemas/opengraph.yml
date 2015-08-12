@@ -1,0 +1,38 @@
+MetadataSchema:
+  OpenGraph:
+    Title: "Facebook OpenGraph"
+    Name: "OpenGraph"
+MetadataTextField:
+  Title:
+    Title: Title
+    Name: og:title
+    Default: $Title
+    Schema: =>MetadataSchema.OpenGraph
+  URL:
+    Title: URL
+    Name: "og:url"
+    Default: $AbsoluteLink
+    Schema: =>MetadataSchema.OpenGraph
+  Description:
+    Title: Description
+    Name: og:description
+    Rows: 3
+    Schema: =>MetadataSchema.OpenGraph
+  SiteName:
+    Title: Site name
+    Name: og:site_name
+    Default: $SiteTitle
+    Schema: =>MetadataSchema.OpenGraph
+  AppID:
+    Title: Facebook App ID
+    Name: fb:app_id
+    Cascade: 1
+    Schema: =>MetadataSchema.OpenGraph
+MetadataRelationField:
+  Image:
+    Title: Image
+    Name: og:image
+    Cascade: 1
+    SubjectClass: Image
+    ReturnValue: Link
+    Schema: =>MetadataSchema.OpenGraph
