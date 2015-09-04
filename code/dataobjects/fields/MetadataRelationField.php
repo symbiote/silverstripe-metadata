@@ -3,6 +3,7 @@
  * @package silverstripe-metadata
  */
 class MetadataRelationField extends MetadataField {
+	const EVERYTHING_LIMIT = 100;
 
 	private static $db = array(
 		'SubjectClass'		=> 'Varchar(100)',
@@ -32,7 +33,7 @@ class MetadataRelationField extends MetadataField {
 				foreach($hasOnes as $name => $type) {
 					if (is_a($type, $class, true)) {
 						$item = $record->$name();
-						if ($item->ID && $item->canView()) {
+						if ($item && $item->ID && $item->canView()) {
 							$objects->push($item);
 						}
 					}
@@ -52,7 +53,8 @@ class MetadataRelationField extends MetadataField {
 			}
 		}
 		if ($this->SelectAny || !$objects || $objects->count() === 0) {
-			$objects = DataObject::get($class);
+			// objects artificially limited to prevent insanity
+			$objects = DataObject::get($class)->limit(self::EVERYTHING_LIMIT);
 		}
 
 		$map = $objects ? $objects->map('ID', $title) : array();
