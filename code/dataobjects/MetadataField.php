@@ -157,7 +157,7 @@ class MetadataField extends DataObject {
 	public function validate() {
 		$result = parent::validate();
 
-		if (preg_match('/[^.a-zA-Z0-9:_]+/', $this->Name)) {
+		if (preg_match('/[^.a-zA-Z0-9:_-]+/', $this->Name)) {
 			$result->error(
 				'The field name can only contain alphanumeric characters,'
 				. ' colons, underscores and periods.'
