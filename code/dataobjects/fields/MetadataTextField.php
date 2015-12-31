@@ -2,72 +2,77 @@
 /**
  * @package silverstripe-metadata
  */
-class MetadataTextField extends MetadataField {
+class MetadataTextField extends MetadataField
+{
 
-	private static $db = array(
-		'Rows' => 'Int',
-	);
+    private static $db = array(
+        'Rows' => 'Int',
+    );
 
-	private static $defaults = array(
-		'Rows' => 1
-	);
+    private static $defaults = array(
+        'Rows' => 1
+    );
 
-	public function getFieldTitle() {
-		return 'Text Field';
-	}
+    public function getFieldTitle()
+    {
+        return 'Text Field';
+    }
 
-	protected $processedRecord;
+    protected $processedRecord;
 
-	public function getCMSFields() {
-		$fields = parent::getCMSFields();
+    public function getCMSFields()
+    {
+        $fields = parent::getCMSFields();
 
-		$fields->addFieldToTab('Root.Options', new NumericField(
-			'Rows', 'Number of rows'
-		));
-		$fields->addFieldToTab('Root.Main', new LiteralField(
-			'KeywordNote', '<p>Keyword replacements in the form "$FieldName"'
-			. ' or "$Member.FieldName" can be used in the default value, as well'
-			. ' as in the actual metadata value. These will be replaced with the'
-			. ' corresponding field from the record the schema is applied to.<p>'
-		));
-		$fields->dataFieldByName('Default')->setRows(3);
+        $fields->addFieldToTab('Root.Options', new NumericField(
+            'Rows', 'Number of rows'
+        ));
+        $fields->addFieldToTab('Root.Main', new LiteralField(
+            'KeywordNote', '<p>Keyword replacements in the form "$FieldName"'
+            . ' or "$Member.FieldName" can be used in the default value, as well'
+            . ' as in the actual metadata value. These will be replaced with the'
+            . ' corresponding field from the record the schema is applied to.<p>'
+        ));
+        $fields->dataFieldByName('Default')->setRows(3);
 
-		return $fields;
-	}
+        return $fields;
+    }
 
-	/**
-	 * @return TextField|TextareaField
-	 */
-	public function getFormField() {
-		if ($rows = $this->Rows > 1) {
-			$field = new TextareaField($this->getFormFieldName(), $this->Title, $this->Rows);
-		} else {
-			$field = new TextField($this->getFormFieldName(), $this->Title);
-		}
+    /**
+     * @return TextField|TextareaField
+     */
+    public function getFormField()
+    {
+        if ($rows = $this->Rows > 1) {
+            $field = new TextareaField($this->getFormFieldName(), $this->Title, $this->Rows);
+        } else {
+            $field = new TextField($this->getFormFieldName(), $this->Title);
+        }
 
-		$field->setRightTitle(sprintf(
-			'<a href="#" class="ss-metadatasetfield-showreplacements">Available keyword replacements</a>'
-		));
+        $field->setRightTitle(sprintf(
+            '<a href="#" class="ss-metadatasetfield-showreplacements">Available keyword replacements</a>'
+        ));
 
-		return $field;
-	}
+        return $field;
+    }
 
-	public function processBeforeWrite($value, $record) {
-		return preg_replace_callback(
-			'/\$Member\.([A-Za-z_][A-Za-z0-9_]*)/',
-			array($this, 'replaceMemberKeyword'),
-			$value);
-	}
+    public function processBeforeWrite($value, $record)
+    {
+        return preg_replace_callback(
+            '/\$Member\.([A-Za-z_][A-Za-z0-9_]*)/',
+            array($this, 'replaceMemberKeyword'),
+            $value);
+    }
 
-	public function replaceMemberKeyword($matches) {
-		$record = Member::currentUser();
-		$field  = $matches[1];
+    public function replaceMemberKeyword($matches)
+    {
+        $record = Member::currentUser();
+        $field  = $matches[1];
 
-		if ($record && $record->$field) {
-			return $record->$field;
-		} else {
-			return '$Member.' . $field;
-		}
-	}
-
+        if ($record && $record->$field) {
+            return $record->$field;
+        } else {
+            return '$Member.' . $field;
+        }
+    }
 }

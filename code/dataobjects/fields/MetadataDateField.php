@@ -2,88 +2,93 @@
 /**
  * @package silverstripe-metadata
  */
-class MetadataDateField extends MetadataField {
+class MetadataDateField extends MetadataField
+{
 
-	private static $db = array(
-		'Type'        => 'Enum("datetime, date, time", "datetime")',
-		'DefaultType' => 'Enum("specific, created", "specific")'
-	);
+    private static $db = array(
+        'Type'        => 'Enum("datetime, date, time", "datetime")',
+        'DefaultType' => 'Enum("specific, created", "specific")'
+    );
 
-	public function getFieldTitle() {
-		return 'Date/Time Field';
-	}
+    public function getFieldTitle()
+    {
+        return 'Date/Time Field';
+    }
 
-	public function getFormField() {
-		switch ($this->Type) {
-			case 'datetime':
-				$field = new DatetimeField($this->getFormFieldName(), $this->Title);
-				$field->getDateField()->setConfig('showcalendar', true);
-				$field->getTimeField()->setConfig('showdropdown', true);
-				break;
+    public function getFormField()
+    {
+        switch ($this->Type) {
+            case 'datetime':
+                $field = new DatetimeField($this->getFormFieldName(), $this->Title);
+                $field->getDateField()->setConfig('showcalendar', true);
+                $field->getTimeField()->setConfig('showdropdown', true);
+                break;
 
-			case 'date':
-				$field = new DateField($this->getFormFieldName(), $this->Title);
-				$field->setConfig('showcalendar', true);
-				break;
+            case 'date':
+                $field = new DateField($this->getFormFieldName(), $this->Title);
+                $field->setConfig('showcalendar', true);
+                break;
 
-			case 'time':
-				$field = new TimeField($this->getFormFieldName(), $this->Title);
-				$field->setConfig('showdropdown', true);
-				break;
-		}
+            case 'time':
+                $field = new TimeField($this->getFormFieldName(), $this->Title);
+                $field->setConfig('showdropdown', true);
+                break;
+        }
 
-		if ($this->DefaultType == 'created') {
-			$field->setRightTitle(
-				'The value will default to the time this record was created.'
-			);
-		}
+        if ($this->DefaultType == 'created') {
+            $field->setRightTitle(
+                'The value will default to the time this record was created.'
+            );
+        }
 
-		return $field;
-	}
+        return $field;
+    }
 
-	/**
-	 * @return Date
-	 */
-	public function process($value, $record) {
-		switch ($this->Type) {
-			case 'datetime': return DBField::create_field('SS_Datetime', $value);
-			case 'date':     return DBField::create_field('Date', $value);
-			case 'time':     return DBField::create_field('Time', $value);
-		}
-	}
+    /**
+     * @return Date
+     */
+    public function process($value, $record)
+    {
+        switch ($this->Type) {
+            case 'datetime': return DBField::create_field('SS_Datetime', $value);
+            case 'date':     return DBField::create_field('Date', $value);
+            case 'time':     return DBField::create_field('Time', $value);
+        }
+    }
 
-	public function processBeforeWrite($value, $record) {
-		if ($this->DefaultType == 'created' && !$value) {
-			return $record->Created;
-		} else {
-			return $value;
-		}
-	}
+    public function processBeforeWrite($value, $record)
+    {
+        if ($this->DefaultType == 'created' && !$value) {
+            return $record->Created;
+        } else {
+            return $value;
+        }
+    }
 
-	public function getCMSFields() {
-		Requirements::javascript(METADATA_DIR . '/javascript/MetadataDateFieldCms.js');
+    public function getCMSFields()
+    {
+        Requirements::javascript(METADATA_DIR . '/javascript/MetadataDateFieldCms.js');
 
-		$fields = parent::getCMSFields();
+        $fields = parent::getCMSFields();
 
-		$fields->removeByName('Default');
-		$default = $this->getFormField();
-		$default->setName('Default');
-		$default->setTitle('Default');
+        $fields->removeByName('Default');
+        $default = $this->getFormField();
+        $default->setName('Default');
+        $default->setTitle('Default');
 
-		$fields->addFieldsToTab('Root.Main', array(
-			new OptionsetField('Type', 'Field type', array(
-				'datetime' => 'A combination date and time field',
-				'date'     => 'Date only',
-				'time'     => 'Time only'
-			)),
-			new OptionSetField('DefaultType', 'Default to', array(
-				'specific' => 'A specific date/time',
-				'created'  => 'The time the object was created'
-			)),
-			$default
-		));
+        $fields->addFieldsToTab('Root.Main', array(
+            new OptionsetField('Type', 'Field type', array(
+                'datetime' => 'A combination date and time field',
+                'date'     => 'Date only',
+                'time'     => 'Time only'
+            )),
+            new OptionSetField('DefaultType', 'Default to', array(
+                'specific' => 'A specific date/time',
+                'created'  => 'The time the object was created'
+            )),
+            $default
+        ));
 
-		return $fields;
-	}
-
+        return $fields;
+    }
 }
