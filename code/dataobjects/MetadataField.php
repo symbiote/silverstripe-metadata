@@ -5,196 +5,213 @@
  *
  * @package silverstripe-metadata
  */
-class MetadataField extends DataObject {
+class MetadataField extends DataObject
+{
 
-	private static $db = array(
-		'Name'     	=> 'Varchar(100)',
-		'Title'    	=> 'Varchar(255)',
-		'Required' 	=> 'Boolean',
-		'Cascade'  	=> 'Boolean',
-		'Default'  	=> 'Text',
-		'Sort'  	=> 'Int',
-	);
+    private static $db = array(
+        'Name'         => 'Varchar(100)',
+        'Title'        => 'Varchar(255)',
+        'Required'    => 'Boolean',
+        'Cascade'    => 'Boolean',
+        'Default'    => 'Text',
+        'Sort'    => 'Int',
+    );
 
-	private static $indexes = array(
-		'Name_SchemaID' => array('type' => 'unique', 'value' => 'Name,SchemaID')
-	);
+    private static $indexes = array(
+        'Name_SchemaID' => array('type' => 'unique', 'value' => 'Name,SchemaID')
+    );
 
-	private static $has_one = array(
-		'Schema' => 'MetadataSchema'
-	);
+    private static $has_one = array(
+        'Schema' => 'MetadataSchema'
+    );
 
-	private static $field_labels = array(
-		'Name'    => 'Field name',
-		'Title'   => 'Title (human readable name)',
-		'Cascade' => 'Cascade to child objects without a value set',
-	);
+    private static $field_labels = array(
+        'Name'    => 'Field name',
+        'Title'   => 'Title (human readable name)',
+        'Cascade' => 'Cascade to child objects without a value set',
+    );
 
-	private static $summary_fields = array(
-		'Name',
-		'Title',
-		'Type'
-	);
+    private static $summary_fields = array(
+        'Name',
+        'Title',
+        'Type'
+    );
 
-	public function getCMSFields(){
-		$fields = parent::getCMSFields();
-		$fields->addFieldToTab('Root.Main', new ReadOnlyField('FieldType', 'Field Type', $this->Type()), 'Name');
-		$fields->removeByName('Sort');
-		$fields->removeByName('SchemaID');
-		return $fields;
-	}
+    public function getCMSFields()
+    {
+        $fields = parent::getCMSFields();
+        $fields->addFieldToTab('Root.Main', new ReadOnlyField('FieldType', 'Field Type', $this->Type()), 'Name');
+        $fields->removeByName('Sort');
+        $fields->removeByName('SchemaID');
+        return $fields;
+    }
 
-	/**
-	 * Returns the title that describes the field type.
-	 *
-	 * @abstract
-	 * @return string
-	 */
-	public function getFieldTitle() {
-		throw new Exception(
-			'You must implemented getFieldTitle() in your metadata field type.'
-		);
-	}
+    /**
+     * Returns the title that describes the field type.
+     *
+     * @abstract
+     * @return string
+     */
+    public function getFieldTitle()
+    {
+        throw new Exception(
+            'You must implemented getFieldTitle() in your metadata field type.'
+        );
+    }
 
-	/**
-	 * Returns a form field instance allowing the user to input a metadata
-	 * value.
-	 *
-	 * @abstract
-	 * @return FormField
-	 */
-	public function getFormField() {
-		throw new Exception(
-			'You must implemented getFormField() in your metadata field type.'
-		);
-	}
+    /**
+     * Returns a form field instance allowing the user to input a metadata
+     * value.
+     *
+     * @abstract
+     * @return FormField
+     */
+    public function getFormField()
+    {
+        throw new Exception(
+            'You must implemented getFormField() in your metadata field type.'
+        );
+    }
 
-	/**
-	 * Processes a field value before it is saved to the database, and returns
-	 * the value.
-	 *
-	 * @param  string $value
-	 * @param  DataObject $record
-	 * @return mixed
-	 */
-	public function processBeforeWrite($value, $record) {
-		return $value;
-	}
+    /**
+     * Processes a field value before it is saved to the database, and returns
+     * the value.
+     *
+     * @param  string $value
+     * @param  DataObject $record
+     * @return mixed
+     */
+    public function processBeforeWrite($value, $record)
+    {
+        return $value;
+    }
 
-	/**
-	 * Processes a field value, and returns the output that should be rendered
-	 * into a template.
-	 *
-	 * @param  string $value
-	 * @param  DataObject $record
-	 * @return mixed
-	 */
-	public function process($value, $record) {
-		$this->processedRecord = $record;
+    /**
+     * Processes a field value, and returns the output that should be rendered
+     * into a template.
+     *
+     * @param  string $value
+     * @param  DataObject $record
+     * @return mixed
+     */
+    public function process($value, $record)
+    {
+        $this->processedRecord = $record;
 
-		return preg_replace_callback(
-			'/\$([A-Za-z_][A-Za-z0-9_]*)/',
-			array($this, 'replaceKeyword'),
-			$value
-		);
-	}
-	
-	public function replaceKeyword($matches) {
-		$record = $this->processedRecord;
-		$field  = $matches[1];
+        return preg_replace_callback(
+            '/\$([A-Za-z_][A-Za-z0-9_]*)/',
+            array($this, 'replaceKeyword'),
+            $value
+        );
+    }
+    
+    public function replaceKeyword($matches)
+    {
+        $record = $this->processedRecord;
+        $field  = $matches[1];
 
-		if ($record->hasField($field)) {
-			return $record->$field;
-		} 
-		
-		$allowedMethods = array('Link', 'AbsoluteLink');
-		if (in_array($field, $allowedMethods)) {
-			return $record->$field();
-		}
+        if ($record->hasField($field)) {
+            return $record->$field;
+        }
+        
+        $allowedMethods = array('Link', 'AbsoluteLink');
+        if (in_array($field, $allowedMethods)) {
+            return $record->$field();
+        }
 
-		return '$' . $field;
-	}
+        return '$' . $field;
+    }
 
-	/**
-	 * Checks if a certain field value is valid.
-	 *
-	 * @param  string $value
-	 * @param  Validator $validator
-	 */
-	public function validateValue($value, $validator) {
-		if(!$this->Required) return;
+    /**
+     * Checks if a certain field value is valid.
+     *
+     * @param  string $value
+     * @param  Validator $validator
+     */
+    public function validateValue($value, $validator)
+    {
+        if (!$this->Required) {
+            return;
+        }
 
-		if(is_array($value)) return; //  eg. checkbox set values
+        if (is_array($value)) {
+            return;
+        } //  eg. checkbox set values
 
-		if (!strlen($value)) {
-			$validator->validationError('MetadataRaw', sprintf(
-				'The metadata field "%s" on the "%s" schema is required',
-				$this->Title, $this->Schema()->Title
-			), 'validation');
-		}
-	}
+        if (!strlen($value)) {
+            $validator->validationError('MetadataRaw', sprintf(
+                'The metadata field "%s" on the "%s" schema is required',
+                $this->Title, $this->Schema()->Title
+            ), 'validation');
+        }
+    }
 
-	/**
-	 * Returns the form field name to use for the metadata field.
-	 *
-	 * @return string
-	 */
-	public function getFormFieldName() {
-		return sprintf('MetadataRaw[%s][%s]', $this->Schema()->Name, $this->Name);
-	}
+    /**
+     * Returns the form field name to use for the metadata field.
+     *
+     * @return string
+     */
+    public function getFormFieldName()
+    {
+        return sprintf('MetadataRaw[%s][%s]', $this->Schema()->Name, $this->Name);
+    }
 
-	/**
-	 * @return string
-	 */
-	public function getTitle() {
-		return ($title = $this->getField('Title')) ? $title : $this->Name;
-	}
+    /**
+     * @return string
+     */
+    public function getTitle()
+    {
+        return ($title = $this->getField('Title')) ? $title : $this->Name;
+    }
 
-	public function getValidator() {
-		return new RequiredFields('Name');
-	}
+    public function getValidator()
+    {
+        return new RequiredFields('Name');
+    }
 
-	public function validate() {
-		$result = parent::validate();
+    public function validate()
+    {
+        $result = parent::validate();
 
-		if (preg_match('/[^.a-zA-Z0-9:_-]+/', $this->Name)) {
-			$result->error(
-				'The field name can only contain alphanumeric characters,'
-				. ' colons, underscores and periods.'
-			);
-		}
+        if (preg_match('/[^.a-zA-Z0-9:_-]+/', $this->Name)) {
+            $result->error(
+                'The field name can only contain alphanumeric characters,'
+                . ' colons, underscores and periods.'
+            );
+        }
 
-		$other = DataObject::get_one('MetadataField', sprintf(
-			'"Name" = \'%s\' AND "SchemaID" = %d %s',
-			Convert::raw2sql($this->Name), $this->SchemaID,
-			($this->ID ? "AND \"MetadataField\".\"ID\" <> {$this->ID}" : '')
-		));
+        $other = DataObject::get_one('MetadataField', sprintf(
+            '"Name" = \'%s\' AND "SchemaID" = %d %s',
+            Convert::raw2sql($this->Name), $this->SchemaID,
+            ($this->ID ? "AND \"MetadataField\".\"ID\" <> {$this->ID}" : '')
+        ));
 
-		if ($other) {
-			$result->error(
-				"The name \"{$this->Name}\" is already in use on this schema, "
-				. ' please choose another one.'
-			);
-		}
+        if ($other) {
+            $result->error(
+                "The name \"{$this->Name}\" is already in use on this schema, "
+                . ' please choose another one.'
+            );
+        }
 
-		return $result;
-	}
-
-
-	/**
-	 * @return string - label for descibing the type of field (for $summary_fields)
-	 */
-	public function Type(){
-		return str_replace('Metadata', '', $this->ClassName);
-	}
+        return $result;
+    }
 
 
-	public function onBeforeWrite(){
-		parent::onBeforeWrite();
+    /**
+     * @return string - label for descibing the type of field (for $summary_fields)
+     */
+    public function Type()
+    {
+        return str_replace('Metadata', '', $this->ClassName);
+    }
 
-		if(!$this->Title){
-			$this->Title = 'New ' . $this->ClassName;
-		}
-	}
 
+    public function onBeforeWrite()
+    {
+        parent::onBeforeWrite();
+
+        if (!$this->Title) {
+            $this->Title = 'New ' . $this->ClassName;
+        }
+    }
 }

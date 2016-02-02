@@ -4,27 +4,29 @@
  *
  * @package silverstripe-metadata
  */
-class MetadataSchemaLink extends DataObject {
+class MetadataSchemaLink extends DataObject
+{
 
-	private static $db = array(
-		'ParentClass' => 'Varchar(100)',
-		'ParentID'    => 'Int'
-	);
+    private static $db = array(
+        'ParentClass' => 'Varchar(100)',
+        'ParentID'    => 'Int'
+    );
 
-	private static $has_one = array(
-		'Schema' => 'MetadataSchema'
-	);
+    private static $has_one = array(
+        'Schema' => 'MetadataSchema'
+    );
 
-	/**
-	 * @return DataObject
-	 */
-	public function getParent() {
-		return DataObject::get_by_id($this->ParentClass, $this->ParentID);
-	}
+    /**
+     * @return DataObject
+     */
+    public function getParent()
+    {
+        return DataObject::get_by_id($this->ParentClass, $this->ParentID);
+    }
 
-	public function onBeforeWrite() {
-		$this->ParentClass = ClassInfo::baseDataClass($this->ParentClass);
-		parent::onBeforeWrite();
-	}
-
+    public function onBeforeWrite()
+    {
+        $this->ParentClass = ClassInfo::baseDataClass($this->ParentClass);
+        parent::onBeforeWrite();
+    }
 }

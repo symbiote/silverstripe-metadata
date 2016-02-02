@@ -8,386 +8,401 @@
  *
  * @package silverstripe-metadata
  */
-class MetadataExtension extends DataExtension {
+class MetadataExtension extends DataExtension
+{
 
-	/**
-	 * @var DataObjectSet
-	 */
-	protected $schemas;
+    /**
+     * @var DataObjectSet
+     */
+    protected $schemas;
 
-	
-	private static $db =  array(
-		'MetadataRaw' => 'Text'
-	);
-
-
-	/**
-	 * Returns all the schema objects attached to this object, or any of its
-	 * parents.
-	 *
-	 * @return DataObjectSet
-	 */
-	public function getSchemas() {
-		if (!$this->schemas) {
-			$schemas = $this->getAttachedSchemas();
-
-			if ($this->owner->hasExtension('Hierarchy')) {
-				$schemas->merge($this->getInheritedSchemas());
-				$schemas->removeDuplicates();
-				$schemas->sort('Title');
-			}
-
-			$this->schemas = $schemas;
-		}
-
-		return $this->schemas;
-	}
-
-	/**
-	 * Returns metadata schemas directly attached to this object via a schema
-	 * link (not including inherited schemas).
-	 *
-	 * @return DataObjectSet
-	 */
-	public function getAttachedSchemas() {
-		$filter = sprintf(
-			'"MetadataSchema"."ID" = "MetadataSchemaLink"."SchemaID"'
-			. ' AND "MetadataSchemaLink"."ParentClass" = \'%s\''
-			. ' AND "MetadataSchemaLink"."ParentID" = %d',
-			ClassInfo::baseDataClass($this->owner->class),
-			$this->owner->ID
-		);
+    
+    private static $db =  array(
+        'MetadataRaw' => 'Text'
+    );
 
 
-		$schemas = MetadataSchema::get()->innerJoin('MetadataSchemaLink', $filter);
+    /**
+     * Returns all the schema objects attached to this object, or any of its
+     * parents.
+     *
+     * @return DataObjectSet
+     */
+    public function getSchemas()
+    {
+        if (!$this->schemas) {
+            $schemas = $this->getAttachedSchemas();
 
-		return $schemas ? new ArrayList($schemas->toArray()) : new ArrayList();
-	}
-	
-	/**
-	 * Alternative ancestor lookup that doesn't use getParent() which fails for Image/File classes
-	 * to retrieve the true hierarchy. 
-	 */
-	protected function altAncestors() {
-		if ($this->owner instanceof File) {
-			$ancestors = new ArrayList();
-			$object    = $this->owner->Parent();
-				
-			while($object && $object->exists()) {
-				$ancestors->push($object);
-				$object = $object->Parent();
-			}
+            if ($this->owner->hasExtension('Hierarchy')) {
+                $schemas->merge($this->getInheritedSchemas());
+                $schemas->removeDuplicates();
+                $schemas->sort('Title');
+            }
 
-			return $ancestors;
-		}
-		
-		return $this->owner->getAncestors();
-	}
+            $this->schemas = $schemas;
+        }
 
-	/**
-	 * If this is attached to an object with the hierarchy extension, it returns
-	 * a set of a schema objects attached to any ancestors (which should be
-	 * present on this object).
-	 *
-	 * @return ArrayList
-	 */
-	public function getInheritedSchemas() {
-		$result = new ArrayList();
+        return $this->schemas;
+    }
 
-		if (!$this->owner->hasExtension('Hierarchy')) {
-			return new ArrayList();
-		}
+    /**
+     * Returns metadata schemas directly attached to this object via a schema
+     * link (not including inherited schemas).
+     *
+     * @return DataObjectSet
+     */
+    public function getAttachedSchemas()
+    {
+        $filter = sprintf(
+            '"MetadataSchema"."ID" = "MetadataSchemaLink"."SchemaID"'
+            . ' AND "MetadataSchemaLink"."ParentClass" = \'%s\''
+            . ' AND "MetadataSchemaLink"."ParentID" = %d',
+            ClassInfo::baseDataClass($this->owner->class),
+            $this->owner->ID
+        );
 
-		$ids     = array();
-		$parents = $this->altAncestors();
 
-		foreach ($parents as $parent) {
-			$ids[] = $parent->ID;
-		}
-		
-		if (count($ids)) {
-			$baseClass = ClassInfo::baseDataClass($this->owner->class);
-			$filter = sprintf(
-				'"MetadataSchema"."ID" = "MetadataSchemaLink"."SchemaID"'
-				. ' AND "MetadataSchemaLink"."ParentClass" = \'%s\''
-				. ' AND "MetadataSchemaLink"."ParentID" IN (%s)',
-				$baseClass,
-				implode(', ', $ids)
-			);
+        $schemas = MetadataSchema::get()->innerJoin('MetadataSchemaLink', $filter);
 
-			$result = MetadataSchema::get()->innerJoin('MetadataSchemaLink', $filter);
+        return $schemas ? new ArrayList($schemas->toArray()) : new ArrayList();
+    }
+    
+    /**
+     * Alternative ancestor lookup that doesn't use getParent() which fails for Image/File classes
+     * to retrieve the true hierarchy. 
+     */
+    protected function altAncestors()
+    {
+        if ($this->owner instanceof File) {
+            $ancestors = new ArrayList();
+            $object    = $this->owner->Parent();
+                
+            while ($object && $object->exists()) {
+                $ancestors->push($object);
+                $object = $object->Parent();
+            }
 
-			if ($result) {
-				$result = new ArrayList($result->toArray());
-			}else{
-				$result = new ArrayList();
-			}
-		}
+            return $ancestors;
+        }
+        
+        return $this->owner->getAncestors();
+    }
 
-		if ($this->owner instanceof SiteTree) {
-			// Check SiteConfig too
-			$config = SiteConfig::current_site_config();
-			if ($config->hasExtension('MetadataExtension')) {
-				$schemas = $config->getAttachedSchemas();
-				if ($schemas && $schemas->count()) {
-					$result->merge($schemas);
-				}
-			}
-		}
+    /**
+     * If this is attached to an object with the hierarchy extension, it returns
+     * a set of a schema objects attached to any ancestors (which should be
+     * present on this object).
+     *
+     * @return ArrayList
+     */
+    public function getInheritedSchemas()
+    {
+        $result = new ArrayList();
 
-		return $result;
-	}
+        if (!$this->owner->hasExtension('Hierarchy')) {
+            return new ArrayList();
+        }
 
-	/**
-	 * Links a metadata schema to this object, if it's not already linked.
-	 *
-	 * @param MetadataSchema|int $schema
-	 */
-	public function addSchema($schema) {
-		$id       = is_object($schema) ? $schema->ID : $schema;
-		$attached = $this->getSchemas()->map();
+        $ids     = array();
+        $parents = $this->altAncestors();
 
-		if (!array_key_exists($id, $attached)) {
-			$link = new MetadataSchemaLink();
-			$link->ParentClass = $this->owner->class;
-			$link->ParentID    = $this->owner->ID;
-			$link->SchemaID    = $id;
-			$link->write();
-		}
+        foreach ($parents as $parent) {
+            $ids[] = $parent->ID;
+        }
+        
+        if (count($ids)) {
+            $baseClass = ClassInfo::baseDataClass($this->owner->class);
+            $filter = sprintf(
+                '"MetadataSchema"."ID" = "MetadataSchemaLink"."SchemaID"'
+                . ' AND "MetadataSchemaLink"."ParentClass" = \'%s\''
+                . ' AND "MetadataSchemaLink"."ParentID" IN (%s)',
+                $baseClass,
+                implode(', ', $ids)
+            );
 
-		$this->schemas = null;
-	}
+            $result = MetadataSchema::get()->innerJoin('MetadataSchemaLink', $filter);
 
-	/**
-	 * @return array
-	 */
-	public function getAllMetadata() {
-		if (!$raw = $this->owner->MetadataRaw) {
-			return array();
-		}
+            if ($result) {
+                $result = new ArrayList($result->toArray());
+            } else {
+                $result = new ArrayList();
+            }
+        }
 
-		$metadata = @unserialize($raw);
-		return is_array($metadata) ? $metadata : array();
-	}
+        if ($this->owner instanceof SiteTree) {
+            // Check SiteConfig too
+            $config = SiteConfig::current_site_config();
+            if ($config->hasExtension('MetadataExtension')) {
+                $schemas = $config->getAttachedSchemas();
+                if ($schemas && $schemas->count()) {
+                    $result->merge($schemas);
+                }
+            }
+        }
 
-	/**
-	 * Returns a raw metadata value (i.e. not run through a process method).
-	 *
-	 * @param  MetadataSchema|string $schema
-	 * @param  MetadataField|string $field
-	 * @return string
-	 */
-	public function getRawMetadataValue($schema, $field) {
-		$metadata = $this->getAllMetadata();
+        return $result;
+    }
 
-		if (!$schema instanceof MetadataSchema && !$schema = $this->getSchemas()->find('Name', $schema)) {
-			return;
-		}
+    /**
+     * Links a metadata schema to this object, if it's not already linked.
+     *
+     * @param MetadataSchema|int $schema
+     */
+    public function addSchema($schema)
+    {
+        $id       = is_object($schema) ? $schema->ID : $schema;
+        $attached = $this->getSchemas()->map();
 
-		if (!$field instanceof MetadataField && !$field = $schema->Fields()->find('Name', $field)) {
-			return;
-		}
+        if (!array_key_exists($id, $attached)) {
+            $link = new MetadataSchemaLink();
+            $link->ParentClass = $this->owner->class;
+            $link->ParentID    = $this->owner->ID;
+            $link->SchemaID    = $id;
+            $link->write();
+        }
 
-		if (isset($metadata[$schema->Name][$field->Name])) {
-			return $metadata[$schema->Name][$field->Name];
-		} else {
-			return $field->Default;
-		}
-	}
+        $this->schemas = null;
+    }
 
-	/**
-	 * Returns a metadata value if it exists for a schema and field name, suitable
-	 * for injection into a template.
-	 *
-	 * NOTE: This can potentially be quite expensive with default and cascading
-	 * values, so results should be cached.
-	 *
-	 * @param  MetadataSchema|string $schema
-	 * @param  MetadataField|string $field
-	 * @return mixed
-	 */
-	public function Metadata($schema, $field) {
-		if (!$schema instanceof MetadataSchema && !$schema = $this->getSchemas()->find('Name', $schema)) {
-			return;
-		}
+    /**
+     * @return array
+     */
+    public function getAllMetadata()
+    {
+        if (!$raw = $this->owner->MetadataRaw) {
+            return array();
+        }
 
-		if (!$field instanceof MetadataField && !$field = $schema->Fields()->find('Name', $field)) {
-			return;
-		}
+        $metadata = @unserialize($raw);
+        return is_array($metadata) ? $metadata : array();
+    }
 
-		$raw  = $this->getRawMetadataValue($schema, $field);
-		$hier = $this->owner->hasExtension('Hierarchy');
+    /**
+     * Returns a raw metadata value (i.e. not run through a process method).
+     *
+     * @param  MetadataSchema|string $schema
+     * @param  MetadataField|string $field
+     * @return string
+     */
+    public function getRawMetadataValue($schema, $field)
+    {
+        $metadata = $this->getAllMetadata();
 
-		$parent = null;
-		// if hierarchy is applicable, and we're a sitetree object, and at the root
-		if ($hier && !$this->owner->ParentID && $this->owner instanceof SiteTree) {
-			if (SiteConfig::current_site_config()->hasExtension('MetadataExtension')) {
-				$parent = SiteConfig::current_site_config();
-			}
-		}
+        if (!$schema instanceof MetadataSchema && !$schema = $this->getSchemas()->find('Name', $schema)) {
+            return;
+        }
 
-		if(!$parent && $this->owner->ParentID){
-			$parent = $this->owner->Parent();
-		}
+        if (!$field instanceof MetadataField && !$field = $schema->Fields()->find('Name', $field)) {
+            return;
+        }
 
-		if (!$raw && $hier && $field->Cascade && $parent) {
-			return $parent->Metadata($schema, $field);
-		}
+        if (isset($metadata[$schema->Name][$field->Name])) {
+            return $metadata[$schema->Name][$field->Name];
+        } else {
+            return $field->Default;
+        }
+    }
 
-		return $field->process($raw, $this->owner);
-	}
+    /**
+     * Returns a metadata value if it exists for a schema and field name, suitable
+     * for injection into a template.
+     *
+     * NOTE: This can potentially be quite expensive with default and cascading
+     * values, so results should be cached.
+     *
+     * @param  MetadataSchema|string $schema
+     * @param  MetadataField|string $field
+     * @return mixed
+     */
+    public function Metadata($schema, $field)
+    {
+        if (!$schema instanceof MetadataSchema && !$schema = $this->getSchemas()->find('Name', $schema)) {
+            return;
+        }
 
-	/**
-	 * Returns all the metadata fields for a schema name encased in standard
-	 * HTML <meta> tags.
-	 *
-	 * @param  string $schema
-	 * @return string
-	 */
-	public function MetadataMetaTags($schemaName = null) {
-		$result = '';
-		$cache  = SS_Cache::factory('MetadataExtension');
-		$key    = md5(implode('', array(
-			$schemaName, 'MetadataMetaTags', $this->owner->class, $this->owner->ID, $this->owner->LastEdited
-		)));
+        if (!$field instanceof MetadataField && !$field = $schema->Fields()->find('Name', $field)) {
+            return;
+        }
 
-		if ($cached = $cache->load($key)) {
-			return $cached;
-		}
+        $raw  = $this->getRawMetadataValue($schema, $field);
+        $hier = $this->owner->hasExtension('Hierarchy');
 
-		foreach ($this->getSchemas() as $schema) {
-			if ($schemaName) {
-				if (!$schema->Name == $schemaName) {
-					continue;
-				}
-			}
-			
-			foreach ($schema->Fields() as $field) {
-				$value = $this->Metadata($schema, $field);
+        $parent = null;
+        // if hierarchy is applicable, and we're a sitetree object, and at the root
+        if ($hier && !$this->owner->ParentID && $this->owner instanceof SiteTree) {
+            if (SiteConfig::current_site_config()->hasExtension('MetadataExtension')) {
+                $parent = SiteConfig::current_site_config();
+            }
+        }
 
-				if (!$value || ($value instanceof DBField && !$value->hasValue())) {
-					continue;
-				}
+        if (!$parent && $this->owner->ParentID) {
+            $parent = $this->owner->Parent();
+        }
 
-				if (is_object($value)) {
-					$value = $value instanceof DBField ? $value->Nice() : $value->getTitle();
-				}
+        if (!$raw && $hier && $field->Cascade && $parent) {
+            return $parent->Metadata($schema, $field);
+        }
 
-				$extraAttributes = '';
-				$extras = $field->extend('getExtraTagAttributes');
-				$usedAttr = array();
-				if ($extras && is_array($extras)){
-					foreach ($extras as $extra){
-						if ($extra && is_array($extra)){
-							foreach ($extra as $k => $v){
-								if (!in_array($k, $usedAttr)){
-									$usedAttr[] = $k;
-									$extraAttributes .= sprintf(' %s="%s"', $k, $v);
-								}
-							}
-							
-						}
-					}
-				}
+        return $field->process($raw, $this->owner);
+    }
 
-				$result .= sprintf(
-					"<meta name=\"%s\"%s content=\"%s\" />\n",
-					Convert::raw2att($field->Name),
-					$extraAttributes,
-					Convert::raw2att($value)
-				);
-			}
-		}
-		
-		$cache->save($result, $key);
-		return $result;
-	}
-	
-	public function updateSiteCMSFields(FieldList $fields) {
-		return $this->updateCMSFields($fields);
-	}
-	
-	public function updateCMSFields(FieldList $fields) {
-		
-		if ($this->owner->ID <= 0) {
-			return;
-		}
-		
-		$p = $this->owner->Parent();
-		$d = $this->owner->getParent();
-		
-		if (!$allSchemas = DataObject::get('MetadataSchema')) {
-			return;
-		}
-		
-		$tabName = 'Root.Metadata';
-		$rootTab = $fields->fieldByName('Root');
-		
-		$newFields = array(
-			new HeaderField('MetadataInfoHeader', 'Metadata Information'),
-			new MetadataSetField($this->owner, 'MetadataRaw'),
-			new HeaderField('MetadataSchemasHeader', 'Metadata Schemas'),
-			$linkedSchemas = new CheckboxSetField('MetadataSchemas', '', $allSchemas)
-		);
+    /**
+     * Returns all the metadata fields for a schema name encased in standard
+     * HTML <meta> tags.
+     *
+     * @param  string $schema
+     * @return string
+     */
+    public function MetadataMetaTags($schemaName = null)
+    {
+        $result = '';
+        $cache  = SS_Cache::factory('MetadataExtension');
+        $key    = md5(implode('', array(
+            $schemaName, 'MetadataMetaTags', $this->owner->class, $this->owner->ID, $this->owner->LastEdited
+        )));
 
-		$inherited = $this->getInheritedSchemas()->map('ID', 'ID');
-		$linkedSchemas->setValue($this->getAttachedSchemas()->map('ID', 'ID'));
-		$linkedSchemas->setDefaultItems($inherited);
-		$linkedSchemas->setDisabledItems($inherited);
+        if ($cached = $cache->load($key)) {
+            return $cached;
+        }
 
-		$canApply = $this->owner->extendedCan('canApplySchemas', Member::currentUser());
-		if ($canApply === false) {
-			$linkedSchemas->setDisabled(true);
-		}
+        foreach ($this->getSchemas() as $schema) {
+            if ($schemaName) {
+                if (!$schema->Name == $schemaName) {
+                    continue;
+                }
+            }
+            
+            foreach ($schema->Fields() as $field) {
+                $value = $this->Metadata($schema, $field);
 
-		if ($this->owner->hasExtension('Hierarchy')) {
-			$newFields[] = new LiteralField(
-				'SchemaAppliedToChildrenNote',
-				'<p>Any metadata schemas selected will also be applied to this'
-				. " item's children.</p>"
-			);
-		}
-		
-		if (!$rootTab) {
-			foreach ($newFields as $f) {
-				$fields->push($f);
-			}
-		} else {
-			$fields->addFieldsToTab($tabName, $newFields);
-		}
-	}
+                if (!$value || ($value instanceof DBField && !$value->hasValue())) {
+                    continue;
+                }
 
-	/**
-	 * Ensures that schemas that are linked to parent objects are not saved
-	 * into this object's relationships.
-	 *
-	 * @param string $values
-	 */
-	public function saveMetadataSchemas($values) {
-		$attached  = $this->getAttachedSchemas();
-		$inherited = $this->getInheritedSchemas()->map('ID', 'ID');
+                if (is_object($value)) {
+                    $value = $value instanceof DBField ? $value->Nice() : $value->getTitle();
+                }
 
-		$ids = array_map('intval', explode(',', $values));
-		$ids = array_diff($ids, $inherited);
+                $extraAttributes = '';
+                $extras = $field->extend('getExtraTagAttributes');
+                $usedAttr = array();
+                if ($extras && is_array($extras)) {
+                    foreach ($extras as $extra) {
+                        if ($extra && is_array($extra)) {
+                            foreach ($extra as $k => $v) {
+                                if (!in_array($k, $usedAttr)) {
+                                    $usedAttr[] = $k;
+                                    $extraAttributes .= sprintf(' %s="%s"', $k, $v);
+                                }
+                            }
+                        }
+                    }
+                }
 
-		$add = array_diff($ids, $attached->map('ID', 'ID'));
-		$del = array_diff($attached->map('ID', 'ID'), $ids);
+                $result .= sprintf(
+                    "<meta name=\"%s\"%s content=\"%s\" />\n",
+                    Convert::raw2att($field->Name),
+                    $extraAttributes,
+                    Convert::raw2att($value)
+                );
+            }
+        }
+        
+        $cache->save($result, $key);
+        return $result;
+    }
+    
+    public function updateSiteCMSFields(FieldList $fields)
+    {
+        return $this->updateCMSFields($fields);
+    }
+    
+    public function updateCMSFields(FieldList $fields)
+    {
+        if ($this->owner->ID <= 0) {
+            return;
+        }
+        
+        $p = $this->owner->Parent();
+        $d = $this->owner->getParent();
+        
+        if (!$allSchemas = DataObject::get('MetadataSchema')) {
+            return;
+        }
+        
+        $tabName = 'Root.Metadata';
+        $rootTab = $fields->fieldByName('Root');
+        
+        $newFields = array(
+            new HeaderField('MetadataInfoHeader', 'Metadata Information'),
+            new MetadataSetField($this->owner, 'MetadataRaw'),
+            new HeaderField('MetadataSchemasHeader', 'Metadata Schemas'),
+            $linkedSchemas = new CheckboxSetField('MetadataSchemas', '', $allSchemas)
+        );
 
-		if ($add) foreach ($add as $id) {
-			$this->addSchema($id);
-		}
+        $inherited = $this->getInheritedSchemas()->map('ID', 'ID');
+        $linkedSchemas->setValue($this->getAttachedSchemas()->map('ID', 'ID'));
+        $linkedSchemas->setDefaultItems($inherited);
+        $linkedSchemas->setDisabledItems($inherited);
 
-		if ($del) DB::query(sprintf(
-			'DELETE FROM "MetadataSchemaLink" WHERE "SchemaID" IN (%s)'
-			. ' AND "ParentClass" = \'%s\' AND "ParentID" = %d',
-			implode(', ', $del),
-			Convert::raw2sql(ClassInfo::baseDataClass($this->owner->class)),
-			$this->owner->ID
-		));
-	}
+        $canApply = $this->owner->extendedCan('canApplySchemas', Member::currentUser());
+        if ($canApply === false) {
+            $linkedSchemas->setDisabled(true);
+        }
 
-	public function flushCache() {
-		$this->schemas = null;
-	}
+        if ($this->owner->hasExtension('Hierarchy')) {
+            $newFields[] = new LiteralField(
+                'SchemaAppliedToChildrenNote',
+                '<p>Any metadata schemas selected will also be applied to this'
+                . " item's children.</p>"
+            );
+        }
+        
+        if (!$rootTab) {
+            foreach ($newFields as $f) {
+                $fields->push($f);
+            }
+        } else {
+            $fields->addFieldsToTab($tabName, $newFields);
+        }
+    }
 
+    /**
+     * Ensures that schemas that are linked to parent objects are not saved
+     * into this object's relationships.
+     *
+     * @param string $values
+     */
+    public function saveMetadataSchemas($values)
+    {
+        $attached  = $this->getAttachedSchemas();
+        $inherited = $this->getInheritedSchemas()->map('ID', 'ID');
+
+        $ids = array_map('intval', explode(',', $values));
+        $ids = array_diff($ids, $inherited);
+
+        $add = array_diff($ids, $attached->map('ID', 'ID'));
+        $del = array_diff($attached->map('ID', 'ID'), $ids);
+
+        if ($add) {
+            foreach ($add as $id) {
+                $this->addSchema($id);
+            }
+        }
+
+        if ($del) {
+            DB::query(sprintf(
+            'DELETE FROM "MetadataSchemaLink" WHERE "SchemaID" IN (%s)'
+            . ' AND "ParentClass" = \'%s\' AND "ParentID" = %d',
+            implode(', ', $del),
+            Convert::raw2sql(ClassInfo::baseDataClass($this->owner->class)),
+            $this->owner->ID
+        ));
+        }
+    }
+
+    public function flushCache()
+    {
+        $this->schemas = null;
+    }
 }
