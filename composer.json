@@ -9,8 +9,8 @@
 		"email": "marcus@silverstripe.com.au"
 	}],
 	"require": {
-		"silverstripe/framework": "3.1.*",
-		"silverstripe/cms": "3.1.*",
+		"silverstripe/framework": "~3.1",
+		"silverstripe/cms": "~3.1",
 		"undefinedoffset/sortablegridfield": "~0.4"
 	},
 	"extra": {
