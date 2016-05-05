@@ -16,8 +16,8 @@ class SolrMetadataExtension extends DataExtension
     {
         if ($this->owner->hasExtension('MetadataExtension')) {
             $all = $this->owner->getAllMetadata();
-            foreach ($all as $schema => $fields) {
-                foreach ($fields as $key => $val) {
+            foreach ($all as $schema => $schemaFields) {
+                foreach ($schemaFields as $key => $val) {
                     if (strlen($val)) {
                         $fields[$key] = true;
                     }
