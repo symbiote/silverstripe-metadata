@@ -323,9 +323,6 @@ class MetadataExtension extends DataExtension
             return;
         }
         
-        $p = $this->owner->Parent();
-        $d = $this->owner->getParent();
-        
         if (!$allSchemas = DataObject::get('MetadataSchema')) {
             return;
         }
