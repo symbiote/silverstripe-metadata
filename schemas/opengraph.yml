@@ -21,7 +21,6 @@ MetadataTextField:
   SiteName:
     Title: Site name
     Name: og:site_name
-    Default: $SiteTitle
     Schema: =>MetadataSchema.OpenGraph
   AppID:
     Title: Facebook App ID
