@@ -41,7 +41,7 @@ MetadataTextField:
   DateModified:
     Title: "DC.Date.Modified"
     Name: "DC.Date.Modified"
-    Default: "$Modified"
+    Default: "$LastEdited"
     Schema: =>MetadataSchema.AGLS
   DatePublished:
     Title: "DC.Date.Published"
@@ -59,7 +59,6 @@ MetadataTextField:
   DocumentType:
     Title: "DC.Type.DocumentType"
     Name: "DC.Type.DocumentType"
-    Default: "$MediaType"
     Schema: =>MetadataSchema.AGLS
   Rights:
     Title: "DC.Rights"
