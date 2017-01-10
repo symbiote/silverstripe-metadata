@@ -8,25 +8,30 @@ MetadataTextField:
     Name: og:title
     Default: $Title
     Schema: =>MetadataSchema.OpenGraph
+    Sort: 1
   URL:
     Title: URL
     Name: "og:url"
     Default: $AbsoluteLink
     Schema: =>MetadataSchema.OpenGraph
+    Sort: 2
   Description:
     Title: Description
     Name: og:description
     Rows: 3
     Schema: =>MetadataSchema.OpenGraph
+    Sort: 3
   SiteName:
     Title: Site name
     Name: og:site_name
     Schema: =>MetadataSchema.OpenGraph
+    Sort: 4
   AppID:
     Title: Facebook App ID
     Name: fb:app_id
     Cascade: 1
     Schema: =>MetadataSchema.OpenGraph
+    Sort: 5
 MetadataRelationField:
   Image:
     Title: Image
@@ -35,3 +40,4 @@ MetadataRelationField:
     SubjectClass: Image
     ReturnValue: Link
     Schema: =>MetadataSchema.OpenGraph
+    Sort: 6

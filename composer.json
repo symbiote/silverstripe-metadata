@@ -11,12 +11,12 @@
 	"require": {
 		"silverstripe/framework": "~3.1",
 		"silverstripe/cms": "~3.1",
-		"undefinedoffset/sortablegridfield": "~0.4"
+		"silverstripe-australia/gridfieldextensions": "~1.0"
 	},
 	"extra": {
 		"installer-name": "metadata",
 		"branch-alias": {
-			"dev-master": "2.1.x-dev"
+			"dev-master": "3.0.x-dev"
 		}
 	},
 	"minimum-stability": "dev"

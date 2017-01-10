@@ -8,72 +8,89 @@ MetadataTextField:
     Name: "DC.Title"
     Default: "$Title"
     Schema: =>MetadataSchema.AGLS
+    Sort: 1
   Creator:
     Title: "DC.Creator"
     Name: "DC.Creator"
     Schema: =>MetadataSchema.AGLS
+    Sort: 2
   Contact:
     Title: "DC.Contact"
     Name: "DC.Contact"
     Schema: =>MetadataSchema.AGLS
+    Sort: 3
   Subject:
     Title: "DC.Subject"
     Name: "DC.Subject"
     Schema: =>MetadataSchema.AGLS
+    Sort: 4
   Description:
     Title: "DC.Description"
     Name: "DC.Description"
     Default: "$MetaDescription"
     Schema: =>MetadataSchema.AGLS
+    Sort: 5
   Topic:
     Title: "DC.Topic"
     Name: "DC.Topic"
     Schema: =>MetadataSchema.AGLS
+    Sort: 6
   Audience:
     Title: "DC.Audience"
     Name: "DC.Audience"
     Schema: =>MetadataSchema.AGLS
+    Sort: 7
   DateCreated:
     Title: "DC.Date.Created"
     Name: "DC.Date.Created"
     Default: "$Created"
     Schema: =>MetadataSchema.AGLS
+    Sort: 8
   DateModified:
     Title: "DC.Date.Modified"
     Name: "DC.Date.Modified"
     Default: "$LastEdited"
     Schema: =>MetadataSchema.AGLS
+    Sort: 9
   DatePublished:
     Title: "DC.Date.Published"
     Name: "DC.Date.Published"
     Schema: =>MetadataSchema.AGLS
+    Sort: 10
   Publisher:
     Title: "DC.Publisher"
     Name: "DC.Publisher"
     Schema: =>MetadataSchema.AGLS
+    Sort: 11
   Format:
     Title: "DC.Format"
     Name: "DC.Format"
     Default: "HTML"
     Schema: =>MetadataSchema.AGLS
+    Sort: 12
   DocumentType:
     Title: "DC.Type.DocumentType"
     Name: "DC.Type.DocumentType"
     Schema: =>MetadataSchema.AGLS
+    Sort: 13
   Rights:
     Title: "DC.Rights"
     Name: "DC.Rights"
     Schema: =>MetadataSchema.AGLS
+    Sort: 14
   Identifier:
     Title: "DC.Identifier"
     Name: "DC.Identifier"
     Schema: =>MetadataSchema.AGLS
+    Sort: 15
   Coverage:
     Title: "DC.Coverage"
     Name: "DC.Coverage"
     Schema: =>MetadataSchema.AGLS
+    Sort: 16
   Language:
     Title: "DC.Language"
     Name: "DC.Language"
     Default: "English"
     Schema: =>MetadataSchema.AGLS
+    Sort: 17

@@ -12,24 +12,29 @@ MetadataSelectField:
     Name: twitter:card
     Default: summary
     Schema: =>MetadataSchema.Twitter
+    Sort: 1
 
 MetadataSelectFieldOption:
   TwitterSummary:
     Key: summary
     Value: summary
     Parent: =>MetadataSelectField.CardType
+    Sort: 1
   TwitterLargeImage:
     Key: summary_large_image
     Value: summary_large_image
     Parent: =>MetadataSelectField.CardType
+    Sort: 2
   TwitterApp:
     Key: app
     Value: app
     Parent: =>MetadataSelectField.CardType
+    Sort: 3
   TwitterPlayer:
     Key: player
     Value: player
     Parent: =>MetadataSelectField.CardType
+    Sort: 4
 
 MetadataTextField:
   TwitterSite:
@@ -38,6 +43,7 @@ MetadataTextField:
     Default: 
     Cascade: 1
     Schema: =>MetadataSchema.Twitter
+    Sort: 2
 
   TwitterCreator:
     Title: Creator
@@ -45,68 +51,81 @@ MetadataTextField:
     Cascade: 1
     Default: 
     Schema: =>MetadataSchema.Twitter
+    Sort: 3
 
   TwitterTitle:
     Title: Title
     Name: twitter:title
     Default: $Title
     Schema: =>MetadataSchema.Twitter
+    Sort: 4
 
   TwitterDescription:
     Title: Description
     Name: twitter:description
     Rows: 3
     Schema: =>MetadataSchema.Twitter
+    Sort: 5
 
   TwitterAppCountry:
     Title: App Country
     Name: twitter:app:country
     Schema: =>MetadataSchema.TwitterApp
+    Sort: 1
 
   TwitterAppNameIphone:
     Title: App Name iPhone
     Name: twitter:app:name:iphone
     Schema: =>MetadataSchema.TwitterApp
+    Sort: 2
 
   TwitterAppIdIphone:
     Title: App ID iPhone
     Name: twitter:app:id:iphone
     Schema: =>MetadataSchema.TwitterApp
+    Sort: 3
 
   TwitterAppUrlIphone:
     Title: App ID iPhone
     Name: twitter:app:url:iphone
     Schema: =>MetadataSchema.TwitterApp
+    Sort: 4
 
   TwitterAppNameIpad:
     Title: App Name iPad
     Name: twitter:app:name:ipad
     Schema: =>MetadataSchema.TwitterApp
+    Sort: 5
 
   TwitterAppIdIpad:
     Title: App ID iPad
     Name: twitter:app:id:ipad
     Schema: =>MetadataSchema.TwitterApp
+    Sort: 6
 
   TwitterAppUrlIpad:
     Title: App ID iPad
     Name: twitter:app:url:ipad
     Schema: =>MetadataSchema.TwitterApp
+    Sort: 7
 
   TwitterAppNameAndroid:
     Title: App Name googleplay
     Name: twitter:app:name:googleplay
     Schema: =>MetadataSchema.TwitterApp
+    Sort: 8
 
   TwitterAppIdAndroid:
     Title: App ID googleplay
     Name: twitter:app:id:googleplay
     Schema: =>MetadataSchema.TwitterApp
+    Sort: 9
 
   TwitterAppUrlAndroid:
     Title: App ID googleplay
     Name: twitter:app:url:googleplay
     Schema: =>MetadataSchema.TwitterApp
+    Sort: 10
 
 MetadataRelationField:
   TwitterImage:
@@ -116,3 +135,4 @@ MetadataRelationField:
     SubjectClass: Image
     ReturnValue: Link
     Schema: =>MetadataSchema.Twitter
+    Sort: 6

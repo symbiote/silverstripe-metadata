@@ -70,14 +70,15 @@ class MetadataSchema extends DataObject
 
             $gridFieldConfig = GridFieldConfig::create()->addComponents(
                 new GridFieldAddNewMetadataFieldButton(),
-                new GridFieldFilterHeader(),
+                new GridFieldToolbarHeader(),
                 new GridFieldSortableHeader(),
+                new GridFieldFilterHeader(),
                 new GridFieldDataColumns(),
                 new GridFieldPaginator(15),
                 new GridFieldEditButton(),
                 new GridFieldDeleteAction(),
                 new GridFieldDetailForm(),
-                new GridFieldSortableRows('Sort'),
+                new GridFieldOrderableRows(),
                 new MetaDataFieldAddForm
             );
 
