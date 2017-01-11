@@ -312,12 +312,7 @@ class MetadataExtension extends DataExtension
         return $result;
     }
     
-    public function updateSiteCMSFields(FieldList $fields)
-    {
-        return $this->updateCMSFields($fields);
-    }
-    
-    public function updateCMSFields(FieldList $fields)
+    public function updateSettingsFields(FieldList $fields)
     {
         if ($this->owner->ID <= 0) {
             return;
