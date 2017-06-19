@@ -1,5 +1,5 @@
 {
-	"name": "silverstripe-australia/metadata",
+	"name": "symbiote/silverstripe-metadata",
 	"description": "Allows the ability to annotate objects with metadata, according to a CMS defined schema.",
 	"type": "silverstripe-module",
 	"homepage": "https://github.com/silverstripe-australia/silverstripe-metadata",
@@ -16,7 +16,7 @@
 	"extra": {
 		"installer-name": "metadata",
 		"branch-alias": {
-			"dev-master": "3.0.x-dev"
+			"dev-master": "4.0.x-dev"
 		}
 	},
 	"minimum-stability": "dev"
