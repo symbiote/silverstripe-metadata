@@ -11,7 +11,7 @@
 	"require": {
 		"silverstripe/framework": "~3.1",
 		"silverstripe/cms": "~3.1",
-		"silverstripe-australia/gridfieldextensions": "~1.0"
+		"symbiote/silverstripe-gridfieldextensions": "~1.0"
 	},
 	"extra": {
 		"installer-name": "metadata",
