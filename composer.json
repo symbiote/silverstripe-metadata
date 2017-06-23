@@ -2,11 +2,11 @@
 	"name": "symbiote/silverstripe-metadata",
 	"description": "Allows the ability to annotate objects with metadata, according to a CMS defined schema.",
 	"type": "silverstripe-module",
-	"homepage": "https://github.com/silverstripe-australia/silverstripe-metadata",
+	"homepage": "https://github.com/symbiote/silverstripe-metadata",
 	"license": "BSD-3-Clause",
 	"authors": [{
 		"name": "Marcus Nyeholt",
-		"email": "marcus@silverstripe.com.au"
+		"email": "marcus@symbiote.com.au"
 	}],
 	"require": {
 		"silverstripe/framework": "~3.1",

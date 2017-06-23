@@ -1,7 +1,7 @@
 <?php
 
 /**
- * @author <marcus@silverstripe.com.au>
+ * @author <marcus@symbiote.com.au>
  * @license BSD License http://www.silverstripe.org/bsd-license
  */
 class SolrMetadataExtension extends DataExtension
