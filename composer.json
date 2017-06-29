@@ -19,5 +19,8 @@
 			"dev-master": "4.0.x-dev"
 		}
 	},
+	"replace": {
+		"silverstripe-australia/metadata": "self.version"
+	},
 	"minimum-stability": "dev"
 }
