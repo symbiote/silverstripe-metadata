@@ -151,8 +151,6 @@ class MetadataSchema extends DataObject
         $schemas = $this->config()->get('default_schemas');
         
         
-        require_once 'spyc/spyc.php';
-        
         foreach ($schemas as $file) {
             if (file_exists(Director::baseFolder().'/'.$file)) {
                 $parser = new Spyc();
