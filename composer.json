@@ -10,6 +10,7 @@
 	}],
 	"require": {
 		"silverstripe/framework": "~3.1",
+        "mustangostang/spyc": "^0.6.2",
 		"silverstripe/cms": "~3.1",
 		"symbiote/silverstripe-gridfieldextensions": "~1.0"
 	},
