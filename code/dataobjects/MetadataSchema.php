@@ -149,8 +149,9 @@ class MetadataSchema extends DataObject
         // get schemas that need creating
         $schemas = $this->config()->get('default_schemas');
         
-        
-        require_once 'spyc/spyc.php';
+        if (!class_exists('Spyc')) {
+            require_once 'spyc/spyc.php';
+        }
         
         foreach ($schemas as $file) {
             if (file_exists(Director::baseFolder().'/'.$file)) {

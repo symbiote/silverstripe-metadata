@@ -14,10 +14,7 @@
 		"undefinedoffset/sortablegridfield": "~0.4"
 	},
 	"extra": {
-		"installer-name": "metadata",
-		"branch-alias": {
-			"dev-master": "2.1.x-dev"
-		}
+		"installer-name": "metadata"
 	},
 	"minimum-stability": "dev"
 }
