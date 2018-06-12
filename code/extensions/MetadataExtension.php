@@ -312,6 +312,16 @@ class MetadataExtension extends DataExtension
         return $result;
     }
     
+    public function updateCMSFields(FieldList $fields)
+    {
+        // instance of SiteTree uses updateSettingsFields hook
+        if ($this->owner instanceof SiteTree) {
+            return;
+        }
+
+        $this->updateSettingsFields($fields);
+    }
+
     public function updateSettingsFields(FieldList $fields)
     {
         if ($this->owner->ID <= 0) {
